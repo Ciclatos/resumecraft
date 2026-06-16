@@ -244,22 +244,22 @@
   }
 
   .entry h3 {
-    font-size: calc(8.3pt + var(--font-delta, 0pt)) !important;
+    font-size: calc(8.3pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: 1.12 !important;
   }
 
   .entry .org {
-    font-size: calc(7.5pt + var(--font-delta, 0pt)) !important;
+    font-size: calc(7.5pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: 1.12 !important;
   }
 
   .entry time {
-    font-size: calc(7pt + var(--font-delta, 0pt)) !important;
+    font-size: calc(7pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     margin-left: 6pt !important;
   }
 
   .entry p {
-    font-size: calc(7.4pt + var(--font-delta, 0pt)) !important;
+    font-size: calc(7.4pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: 1.22 !important;
     margin-top: 1pt !important;
   }
@@ -274,13 +274,13 @@
   }
 
   .project h3 {
-    font-size: calc(7.9pt + var(--font-delta, 0pt)) !important;
+    font-size: calc(7.9pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: 1.08 !important;
     margin-bottom: 2pt !important;
   }
 
   .project p {
-    font-size: calc(7.1pt + var(--font-delta, 0pt)) !important;
+    font-size: calc(7.1pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: 1.18 !important;
   }
 
@@ -500,7 +500,7 @@
   .minimal-header h1,
   .creative-header h1,
   .ats-header h1 {
-    font-size: calc((18pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
+    font-size: calc((18pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: 0.95 !important;
     margin: 0 0 2pt !important;
   }
@@ -510,7 +510,7 @@
   .creative-header p,
   .ats-header p,
   .contact-bar li {
-    font-size: calc((7.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
+    font-size: calc((7.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: var(--scale-leading, 1.2) !important;
   }
 
@@ -583,7 +583,7 @@
   }
 
   .creative-highlight h2 {
-    font-size: calc((7.7pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
+    font-size: calc((7.7pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     margin-bottom: 4pt !important;
   }
 
@@ -596,7 +596,7 @@
   }
 
   .list-block h2 {
-    font-size: calc((7.7pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
+    font-size: calc((7.7pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     margin-bottom: 4pt !important;
   }
 
@@ -605,12 +605,12 @@
   }
 
   .list-block li {
-    font-size: calc((6.8pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
+    font-size: calc((6.8pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: var(--scale-leading, 1.16) !important;
   }
 
   .resume .summary {
-    font-size: calc((8.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
+    font-size: calc((8.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
     line-height: var(--scale-leading, 1.28) !important;
   }
 

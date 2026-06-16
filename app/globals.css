@@ -972,6 +972,48 @@ a {
   box-shadow: 0 1px 4px rgba(16, 24, 40, 0.08);
 }
 
+.range-title {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.range-title strong {
+  color: var(--craft);
+  font-size: 13px;
+}
+
+.scale-slider {
+  accent-color: var(--craft);
+  cursor: pointer;
+  width: 100%;
+}
+
+.toggle-control {
+  align-items: center;
+  background: #fbfdfe;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.toggle-control span {
+  color: #253241;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.toggle-control input {
+  accent-color: var(--craft);
+  height: 18px;
+  width: 18px;
+}
+
 .photo-field {
   display: grid;
   gap: 8px;
@@ -1160,7 +1202,7 @@ a {
 }
 
 .resume .summary {
-  font-size: calc((12.3px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((12.3px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: var(--scale-leading, 1.42);
 }
 
@@ -1174,11 +1216,11 @@ a {
 }
 
 .resume .entry h3 {
-  font-size: calc((13px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((13px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
 }
 
 .resume .entry .org {
-  font-size: calc((12px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((12px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
 }
 
 .resume .entry time,
@@ -1186,7 +1228,7 @@ a {
 .resume .project p,
 .resume .simple-list li,
 .resume .contact-list li {
-  font-size: calc((11px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((11px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: var(--scale-leading, 1.34);
 }
 
@@ -1216,7 +1258,7 @@ a {
 
 .corporate-header h1,
 .minimal-header h1 {
-  font-size: calc(30px * var(--scale-body, 1));
+  font-size: calc((30px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   letter-spacing: 0;
   line-height: 1;
   margin: 0 0 6px;
@@ -1226,7 +1268,7 @@ a {
 .corporate-header p,
 .minimal-header p {
   color: var(--muted);
-  font-size: calc(13px * var(--scale-body, 1));
+  font-size: calc((13px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   font-weight: 800;
   line-height: 1.35;
   margin: 0;
@@ -1267,7 +1309,7 @@ a {
 }
 
 .contact-bar li {
-  font-size: calc(10.5px * var(--scale-body, 1));
+  font-size: calc((10.5px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: 1.25;
 }
 
@@ -1295,7 +1337,7 @@ a {
 
 .list-block h2 {
   color: var(--ink);
-  font-size: calc(12px * var(--scale-body, 1));
+  font-size: calc((12px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: 1.1;
   margin: 0 0 7px;
   text-transform: uppercase;
@@ -1311,12 +1353,22 @@ a {
 
 .list-block li {
   color: #344252;
-  font-size: calc(10.8px * var(--scale-body, 1));
+  font-size: calc((10.8px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: var(--scale-leading, 1.32);
 }
 
 .list-block-compact ul {
   grid-template-columns: 1fr 1fr;
+}
+
+.resume-lists .qr-card {
+  background: #f8fafc;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.resume-lists .qr-card p {
+  color: var(--muted);
 }
 
 .minimal-header {
@@ -1376,14 +1428,14 @@ a {
 }
 
 .creative-header h1 {
-  font-size: calc((34px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((34px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: 0.95;
   margin: 0 0 8px;
   text-transform: uppercase;
 }
 
 .creative-header p {
-  font-size: calc((13px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((13px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   font-weight: 800;
   line-height: 1.3;
   margin: 0;
@@ -1416,7 +1468,7 @@ a {
 
 .creative-highlight h2 {
   color: var(--ink);
-  font-size: calc((12px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((12px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: 1.1;
   margin: 0 0 8px;
   text-transform: uppercase;
@@ -1436,7 +1488,7 @@ a {
 }
 
 .ats-header h1 {
-  font-size: calc((30px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((30px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   line-height: 1;
   margin: 0;
   text-transform: uppercase;
@@ -1444,7 +1496,7 @@ a {
 
 .ats-header p {
   color: #374151;
-  font-size: calc((13px * var(--scale-body, 1)) + var(--font-delta, 0px));
+  font-size: calc((13px * var(--scale-body, 1)) + var(--font-delta, 0px) + var(--font-slider-delta, 0px));
   font-weight: 800;
   margin: 0;
 }

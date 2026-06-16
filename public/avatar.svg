@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="ResumeCraft sample avatar">
+  <rect width="240" height="240" rx="48" fill="#0f766e"/>
+  <circle cx="120" cy="88" r="42" fill="#ccfbf1"/>
+  <path fill="#ccfbf1" d="M48 212c8-42 35-67 72-67s64 25 72 67H48Z"/>
+  <path fill="#14b8a6" d="M67 43h106v20H67z" opacity=".35"/>
+  <path fill="#f8fafc" d="M76 182h88v13H76z" opacity=".55"/>
+</svg>

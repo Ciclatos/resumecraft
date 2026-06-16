@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import { Section } from "./Section";
 import { Sidebar } from "./Sidebar";
 import { PrintButton } from "./PrintButton";
+import { QRCode } from "./QRCode";
 import type {
   FontSize,
   ResumeData,
@@ -20,7 +21,9 @@ type ResumeProps = {
   typeScale?: TypeScale;
   density?: ResumeDensity;
   fontSize?: FontSize;
+  fontScale?: number;
   showDemoLinks?: boolean;
+  showPhoto?: boolean;
   showQr?: boolean;
   actions?: React.ReactNode;
   icons?: {
@@ -54,7 +57,9 @@ export function Resume({
   typeScale = "normal",
   density = "normal",
   fontSize = "normal",
+  fontScale = 100,
   showDemoLinks = true,
+  showPhoto = true,
   showQr = false,
   actions,
   icons = defaultIcons,
@@ -68,6 +73,9 @@ export function Resume({
     `resume-font-${fontSize}`,
     `print-${printMode}`,
   ].join(" ");
+  const resumeStyle = {
+    "--font-slider-delta": `${(fontScale - 100) * 0.08}px`,
+  } as React.CSSProperties;
 
   return (
     <main className="screen-shell">
@@ -92,8 +100,10 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          showPhoto={showPhoto}
           showQr={showQr}
           summaryIcon={SummaryIcon}
+          style={resumeStyle}
         />
       ) : template === "professional-corporate" ? (
         <ProfessionalCorporateResume
@@ -101,7 +111,10 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          showPhoto={showPhoto}
+          showQr={showQr}
           summaryIcon={SummaryIcon}
+          style={resumeStyle}
         />
       ) : template === "minimal-clean" ? (
         <MinimalCleanResume
@@ -109,7 +122,10 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          showPhoto={showPhoto}
+          showQr={showQr}
           summaryIcon={SummaryIcon}
+          style={resumeStyle}
         />
       ) : template === "creative-tech" ? (
         <CreativeTechResume
@@ -117,7 +133,10 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          showPhoto={showPhoto}
+          showQr={showQr}
           summaryIcon={SummaryIcon}
+          style={resumeStyle}
         />
       ) : (
         <ATSCleanResume
@@ -125,7 +144,10 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          showPhoto={showPhoto}
+          showQr={showQr}
           summaryIcon={SummaryIcon}
+          style={resumeStyle}
         />
       )}
     </main>
@@ -136,8 +158,10 @@ type TemplateProps = {
   className: string;
   data: ResumeData;
   label: string;
+  showPhoto?: boolean;
   showQr?: boolean;
   summaryIcon: LucideIcon;
+  style?: React.CSSProperties;
   icons: {
     summary: LucideIcon;
     experience: LucideIcon;
@@ -151,12 +175,14 @@ function ModernSidebarResume({
   data,
   icons,
   label,
+  showPhoto,
   showQr,
   summaryIcon: SummaryIcon,
+  style,
 }: TemplateProps) {
   return (
-    <article className={className}>
-      <Sidebar data={data} showQr={showQr} />
+    <article className={className} style={style}>
+      <Sidebar data={data} showPhoto={showPhoto} showQr={showQr} />
       <div className="main">
         <ResumeIntro data={data} label={label} SummaryIcon={SummaryIcon} />
         <CoreSections data={data} icons={icons} />
@@ -170,14 +196,17 @@ function ProfessionalCorporateResume({
   data,
   icons,
   label,
+  showPhoto,
+  showQr,
   summaryIcon: SummaryIcon,
+  style,
 }: TemplateProps) {
   return (
-    <article className={className}>
+    <article className={className} style={style}>
       <header className="corporate-header">
         <p className="kicker">{label}</p>
         <div className="template-header-identity">
-          <HeaderPhoto data={data} />
+          <HeaderPhoto data={data} showPhoto={showPhoto} />
           <div>
             <h1>{data.name}</h1>
             <p>{data.headline}</p>
@@ -190,7 +219,7 @@ function ProfessionalCorporateResume({
           <ResumeIntro data={data} label="Professional profile" SummaryIcon={SummaryIcon} />
           <CoreSections data={data} icons={icons} />
         </div>
-        <ResumeSidebarLists data={data} />
+        <ResumeSidebarLists data={data} showQr={showQr} />
       </div>
     </article>
   );
@@ -201,14 +230,17 @@ function MinimalCleanResume({
   data,
   icons,
   label,
+  showPhoto,
+  showQr,
   summaryIcon: SummaryIcon,
+  style,
 }: TemplateProps) {
   return (
-    <article className={className}>
+    <article className={className} style={style}>
       <header className="minimal-header">
         <p className="kicker">{label}</p>
         <div className="template-header-identity">
-          <HeaderPhoto data={data} />
+          <HeaderPhoto data={data} showPhoto={showPhoto} />
           <div>
             <h1>{data.name}</h1>
             <p>{data.headline}</p>
@@ -219,7 +251,7 @@ function MinimalCleanResume({
       <div className="minimal-main">
         <ResumeIntro data={data} label="Profile" SummaryIcon={SummaryIcon} />
         <CoreSections data={data} icons={icons} />
-        <ResumeSidebarLists data={data} />
+        <ResumeSidebarLists data={data} showQr={showQr} />
       </div>
     </article>
   );
@@ -230,17 +262,20 @@ function CreativeTechResume({
   data,
   icons,
   label,
+  showPhoto,
+  showQr,
   summaryIcon: SummaryIcon,
+  style,
 }: TemplateProps) {
   return (
-    <article className={className}>
+    <article className={className} style={style}>
       <header className="creative-header">
         <div>
           <p className="kicker">{label}</p>
           <h1>{data.name}</h1>
           <p>{data.headline}</p>
         </div>
-        <HeaderPhoto data={data} />
+        <HeaderPhoto data={data} showPhoto={showPhoto} />
       </header>
       <div className="creative-strip">
         <ContactBar data={data} />
@@ -256,7 +291,7 @@ function CreativeTechResume({
           </div>
         </section>
         <CoreSections data={data} icons={icons} />
-        <ResumeSidebarLists data={data} />
+        <ResumeSidebarLists data={data} showQr={showQr} />
       </div>
     </article>
   );
@@ -267,29 +302,37 @@ function ATSCleanResume({
   data,
   icons,
   label,
+  showPhoto,
+  showQr,
   summaryIcon: SummaryIcon,
+  style,
 }: TemplateProps) {
   return (
-    <article className={className}>
+    <article className={className} style={style}>
       <header className="ats-header">
         <p className="kicker">{label}</p>
-        <h1>{data.name}</h1>
-        <p>{data.headline}</p>
+        <div className="template-header-identity">
+          <HeaderPhoto data={data} showPhoto={showPhoto} />
+          <div>
+            <h1>{data.name}</h1>
+            <p>{data.headline}</p>
+          </div>
+        </div>
         <ContactBar data={data} />
       </header>
       <div className="ats-main">
         <ResumeIntro data={data} label="Professional summary" SummaryIcon={SummaryIcon} />
         <CoreSections data={data} icons={icons} />
-        <ResumeSidebarLists data={data} />
+        <ResumeSidebarLists data={data} showQr={showQr} />
       </div>
     </article>
   );
 }
 
-function HeaderPhoto({ data }: { data: ResumeData }) {
+function HeaderPhoto({ data, showPhoto = true }: { data: ResumeData; showPhoto?: boolean }) {
   const photo = data.photo?.trim();
 
-  if (!photo) {
+  if (!showPhoto || !photo) {
     return null;
   }
 
@@ -383,7 +426,7 @@ function CoreSections({
   );
 }
 
-function ResumeSidebarLists({ data }: { data: ResumeData }) {
+function ResumeSidebarLists({ data, showQr = false }: { data: ResumeData; showQr?: boolean }) {
   return (
     <aside className="resume-lists">
       <ListBlock title="Habilidades" items={data.sections.skills} />
@@ -398,6 +441,12 @@ function ResumeSidebarLists({ data }: { data: ResumeData }) {
           ))}
         </ul>
       </div>
+      {showQr && data.contact.portfolio ? (
+        <div className="list-block qr-list-block">
+          <h2>Portafolio</h2>
+          <QRCode value={data.contact.portfolio} />
+        </div>
+      ) : null}
     </aside>
   );
 }

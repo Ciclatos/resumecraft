@@ -15,10 +15,11 @@ import { QRCode } from "./QRCode";
 
 type SidebarProps = {
   data: ResumeData;
+  showPhoto?: boolean;
   showQr?: boolean;
 };
 
-export function Sidebar({ data, showQr = false }: SidebarProps) {
+export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps) {
   const photo = data.photo?.trim();
   const contact = data.contact;
   const portfolioLabel = contact.portfolio.replace(/^https?:\/\//, "");
@@ -27,11 +28,11 @@ export function Sidebar({ data, showQr = false }: SidebarProps) {
 
   return (
     <aside className="sidebar">
-      {photo ? (
+      {showPhoto && photo ? (
         <div className="portrait">
           <img src={photo} alt={`Foto profesional de ${data.name}`} />
         </div>
-      ) : (
+      ) : showPhoto ? (
         <div className="portrait portrait-fallback" aria-hidden="true">
           {data.name
             .split(" ")
@@ -40,7 +41,7 @@ export function Sidebar({ data, showQr = false }: SidebarProps) {
             .map((part) => part[0])
             .join("")}
         </div>
-      )}
+      ) : null}
 
       <div className="identity">
         <h1>{data.name}</h1>

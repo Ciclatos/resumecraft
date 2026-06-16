@@ -49,6 +49,9 @@ export type BuilderSettings = {
   typeScale: TypeScale;
   density: ResumeDensity;
   fontSize: FontSize;
+  fontScale: number;
+  showPhoto: boolean;
+  showQr: boolean;
 };
 
 export type ResumeData = {
@@ -71,7 +74,7 @@ export type ResumeData = {
 
 export const exampleResumeData: ResumeData = {
   name: "Sofía Herrera",
-  photo: "",
+  photo: "/avatar.svg",
   headline: "Operations Analyst | Process Improvement | Data Reporting",
   contact: {
     email: "sofia.herrera@example.com",
@@ -171,4 +174,7 @@ export const defaultBuilderSettings: BuilderSettings = {
   typeScale: "normal",
   density: "normal",
   fontSize: "normal",
+  fontScale: 100,
+  showPhoto: true,
+  showQr: true,
 };

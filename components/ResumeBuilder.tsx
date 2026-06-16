@@ -242,12 +242,31 @@ export function ResumeBuilder() {
             onChange={(fontSize) => updateSettings({ fontSize })}
           />
 
+          <ScaleSlider
+            value={settings.fontScale}
+            onChange={(fontScale) => updateSettings({ fontScale })}
+          />
+
           <SegmentedControl
             label="Densidad"
             value={settings.density}
             options={densityOptions}
             onChange={(density) => updateSettings({ density })}
           />
+
+          <section className="editor-section editor-section-tight">
+            <h2>Elementos visuales</h2>
+            <ToggleControl
+              checked={settings.showPhoto}
+              label="Mostrar foto"
+              onChange={(showPhoto) => updateSettings({ showPhoto })}
+            />
+            <ToggleControl
+              checked={settings.showQr}
+              label="Mostrar QR de portafolio"
+              onChange={(showQr) => updateSettings({ showQr })}
+            />
+          </section>
 
           <section className="editor-section">
             <h2>Datos principales</h2>
@@ -384,8 +403,10 @@ export function ResumeBuilder() {
             typeScale={settings.typeScale}
             density={settings.density}
             fontSize={settings.fontSize}
+            fontScale={settings.fontScale}
             showDemoLinks={false}
-            showQr={Boolean(resume.contact.portfolio)}
+            showPhoto={settings.showPhoto}
+            showQr={settings.showQr && Boolean(resume.contact.portfolio)}
             actions={
               <>
                 <button className="toolbar-button" type="button" onClick={loadExample}>
@@ -435,6 +456,54 @@ function TemplateSelector({
         ))}
       </div>
     </section>
+  );
+}
+
+function ScaleSlider({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <section className="editor-section editor-section-tight">
+      <div className="range-title">
+        <h2>Escala tipográfica fina</h2>
+        <strong>{value}%</strong>
+      </div>
+      <input
+        aria-label="Escala tipográfica fina"
+        className="scale-slider"
+        max={115}
+        min={85}
+        step={1}
+        type="range"
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+      />
+    </section>
+  );
+}
+
+function ToggleControl({
+  checked,
+  label,
+  onChange,
+}: {
+  checked: boolean;
+  label: string;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="toggle-control">
+      <span>{label}</span>
+      <input
+        checked={checked}
+        type="checkbox"
+        onChange={(event) => onChange(event.target.checked)}
+      />
+    </label>
   );
 }
 

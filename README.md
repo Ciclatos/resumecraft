@@ -15,7 +15,8 @@ It keeps the strongest parts of the original prototype as a reusable product: st
 - Structured resume data for config-driven demos.
 - Fictional demo routes kept separate from the product experience.
 - Local photo upload with JPG, PNG and WEBP support.
-- Typography scale and density controls for better A4 fitting.
+- Typography scale slider, font presets and density controls for better A4 fitting.
+- Photo and portfolio QR visibility toggles across templates.
 - Ready for Vercel deployment.
 
 ## Routes
@@ -63,8 +64,11 @@ The MVP supports:
 - photo upload from the user's device
 - template selection
 - auto fit visual: compact, normal and wide
+- typography scale slider from 85% to 115%
 - manual font size: small, normal and large
 - density: compact, normal and airy
+- show or hide photo
+- show or hide portfolio QR
 
 Experience, education and projects can be added, removed and reordered directly in the builder. Skills, tools, focus areas and languages can also be added or deleted from the UI.
 

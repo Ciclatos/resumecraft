@@ -1,6 +1,6 @@
 export const profile = {
   name: "Sofía Herrera",
-  photo: "",
+  photo: "/avatar.svg",
   email: "sofia.herrera@example.com",
   phone: "+1 555 0184",
   location: "Remote / Ciudad de México",
