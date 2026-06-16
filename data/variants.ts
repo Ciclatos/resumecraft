@@ -26,6 +26,7 @@ export type ResumeProject = {
 export type ResumeVariant = {
   slug: string;
   name: string;
+  printMode: "balanced" | "compact" | "dense";
   metaDescription: string;
   headline: string;
   summary: string;
@@ -105,6 +106,7 @@ export const variants: Record<string, ResumeVariant> = {
   base: {
     slug: "base",
     name: "CV General",
+    printMode: "balanced",
     metaDescription:
       "Perfil general de Carlos Díaz en tecnología, IA, automatización, desarrollo web y contenidos digitales.",
     headline: profile.headline,
@@ -144,8 +146,6 @@ export const variants: Record<string, ResumeVariant> = {
         "Node.js",
         "Git",
         "PostgreSQL",
-        "Supabase",
-        "APIs",
       ],
     },
     icons: {
@@ -158,6 +158,7 @@ export const variants: Record<string, ResumeVariant> = {
   edteam: {
     slug: "edteam",
     name: "CV EDteam",
+    printMode: "compact",
     metaDescription:
       "CV de Carlos Díaz adaptado a Asistente de Contenidos en EDteam.",
     headline:
@@ -214,9 +215,7 @@ export const variants: Record<string, ResumeVariant> = {
         "React",
         "JavaScript",
         "n8n",
-        "APIs",
-        "Git",
-        "Documentación técnica",
+        "Documentación",
       ],
     },
     icons: {
@@ -229,12 +228,13 @@ export const variants: Record<string, ResumeVariant> = {
   walmart: {
     slug: "walmart",
     name: "CV Walmart",
+    printMode: "dense",
     metaDescription:
       "CV de Carlos Díaz adaptado a Programador de Pedidos en Walmart.",
     headline:
       "Análisis de Datos | Reportes | Servicio al Cliente | Organización Operativa",
     summary:
-      "Estudiante de Ingeniería en Sistemas con formación previa en producción digital y experiencia en servicio al cliente, soporte técnico, documentación y seguimiento de solicitudes. Perfil ordenado, analítico y adaptable, con manejo de actividades simultáneas, Excel intermedio, elaboración de reportes y comunicación efectiva con clientes internos y externos. IA y automatización como herramientas complementarias para productividad, análisis y organización.",
+      "Estudiante de Ingeniería en Sistemas con experiencia en servicio al cliente, soporte técnico, documentación y seguimiento de solicitudes. Perfil ordenado y analítico, con manejo de actividades simultáneas, Excel intermedio, elaboración de reportes y comunicación efectiva. IA y automatización como apoyo para productividad, análisis y organización.",
     focus: [
       "Excel intermedio",
       "Análisis de datos",
@@ -249,17 +249,17 @@ export const variants: Record<string, ResumeVariant> = {
         {
           ...baseExperience[1],
           description:
-            "Atención a clientes, resolución de solicitudes, documentación de casos, seguimiento de incidencias y coordinación con áreas internas para mantener calidad y tiempos de respuesta.",
+            "Atención a clientes, resolución de solicitudes, documentación de casos y seguimiento de incidencias con orden y calidad.",
         },
         {
           ...baseExperience[0],
           description:
-            "Planificación de entregables, organización de archivos, coordinación con equipos de comunicación y cumplimiento de procesos bajo estándares de calidad.",
+            "Planificación de entregables, organización de archivos, coordinación con equipos y cumplimiento de procesos.",
         },
         {
           ...baseExperience[2],
           description:
-            "Colaboración con equipos de marketing, atención a requerimientos, orden de materiales y apoyo en entregables para campañas.",
+            "Atención a requerimientos, orden de materiales y apoyo en entregables para campañas.",
         },
         baseExperience[3],
       ],
@@ -267,22 +267,22 @@ export const variants: Record<string, ResumeVariant> = {
         {
           name: "MedSync",
           description:
-            "Sistema hospitalario en desarrollo con módulos de pacientes, finanzas, inventario y cuentas por cobrar; enfoque en orden de datos y procesos.",
+            "Sistema hospitalario con módulos de pacientes, finanzas, inventario y cuentas por cobrar.",
         },
         {
           name: "PhyLab",
           description:
-            "Plataforma educativa con visualización de datos, simuladores y reportes de aprendizaje para apoyar análisis y explicación de información.",
+            "Plataforma educativa con visualización de datos, simuladores y reportes de aprendizaje.",
         },
         {
           name: "Amaranto Parfum",
           description:
-            "Prototipo con automatización para ordenar preferencias de clientes y apoyar decisiones de personalización.",
+            "Prototipo con automatización para ordenar preferencias de clientes.",
         },
         {
           name: "Project Pulse",
           description:
-            "Herramienta de organización creativa mediante código, útil para estructurar procesos y manipular información digital.",
+            "Herramienta para estructurar procesos y manipular información digital.",
         },
       ],
       education: profile.education,
@@ -296,7 +296,6 @@ export const variants: Record<string, ResumeVariant> = {
         "Planificación y orden",
         "Comunicación efectiva",
         "Iniciativa y mejora continua",
-        "Empatía",
       ],
       tools: [
         "Excel intermedio",
@@ -307,13 +306,11 @@ export const variants: Record<string, ResumeVariant> = {
         "Conclusiones",
         "Documentación técnica",
         "ChatGPT",
-        "Automatización básica",
-        "JavaScript",
+        "Automatización",
         "APIs",
-        "Git",
       ],
       additional:
-        "Disponibilidad compatible con CD Bárcenas: lunes 4:00 am a 2:00 pm; martes a viernes 6:00 am a 1:00 pm; sábado 7:00 am a 11:00 am; domingo libre. Disposición para trabajo presencial, coordinación con áreas internas y mejora continua de procesos.",
+        "Disponibilidad compatible con CD Bárcenas: lunes 4:00 am a 2:00 pm; martes a viernes 6:00 am a 1:00 pm; sábado 7:00 am a 11:00 am. Disposición presencial y coordinación con áreas internas.",
     },
     icons: {
       summary: LayoutDashboard,

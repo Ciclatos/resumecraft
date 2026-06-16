@@ -16,6 +16,7 @@ const variantLinks = [
 
 export function Resume({ variant }: ResumeProps) {
   const SummaryIcon = variant.icons.summary;
+  const resumeClass = `resume resume-${variant.slug} print-${variant.printMode}`;
 
   return (
     <main className="screen-shell">
@@ -26,9 +27,12 @@ export function Resume({ variant }: ResumeProps) {
           </Link>
         ))}
         <PrintButton />
+        <p className="print-tip">
+          PDF: A4, escala 90-95%, márgenes ninguno, gráficos de fondo activados.
+        </p>
       </nav>
 
-      <article className="resume">
+      <article className={resumeClass}>
         <Sidebar variant={variant} />
         <div className="main">
           <header className="topline">

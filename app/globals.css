@@ -40,6 +40,8 @@ a {
   justify-content: center;
   margin: 0 auto 16px;
   max-width: 216mm;
+  row-gap: 8px;
+  flex-wrap: wrap;
 }
 
 .toolbar a,
@@ -62,6 +64,15 @@ a {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--white);
+}
+
+.print-tip {
+  color: var(--muted);
+  flex-basis: 100%;
+  font-size: 12px;
+  line-height: 1.35;
+  margin: 0;
+  text-align: center;
 }
 
 .resume {

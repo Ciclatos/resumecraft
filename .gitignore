@@ -4,6 +4,7 @@ node_modules
 out
 dist
 .vercel
+tmp
 *.log
 .env*
 !/.env.example

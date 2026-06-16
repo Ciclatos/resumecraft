@@ -46,14 +46,23 @@ Para crear una nueva variante:
 
 Cada CV tiene un botón `Descargar PDF`. El botón abre el diálogo de impresión del navegador.
 
-Configuración recomendada:
+Configuración recomendada para el resultado más fiel:
 
 - Destino: `Guardar como PDF`.
 - Tamaño de papel: `A4`.
-- Márgenes: `Ninguno` o `Predeterminado`, según el navegador.
-- Activar `Gráficos de fondo` para conservar la columna lateral.
+- Escala: `90%` a `95%` si el navegador muestra un salto de página.
+- Márgenes: `Ninguno`.
+- Activar `Gráficos de fondo` para conservar la columna lateral, fondos e íconos.
 
 También puedes usar `Cmd + P` en macOS o `Ctrl + P` en Windows/Linux.
+
+Notas por variante:
+
+- `/cv/walmart` está optimizada para una sola página en PDF.
+- `/cv/edteam` usa una versión compacta en impresión y oculta contenido secundario.
+- `/cv/base` intenta mantenerse en una página; conserva más proyectos que las variantes específicas.
+
+La vista web puede mostrar más contenido que el PDF. En impresión, `styles/print.css` aplica una hoja A4 exacta, tipografías en puntos y reglas de compactación por variante para priorizar legibilidad.
 
 ## Desplegar en Vercel
 

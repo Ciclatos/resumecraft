@@ -4,15 +4,26 @@
 }
 
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   html,
   body {
     background: #ffffff !important;
-    height: auto;
+    height: 297mm;
+    margin: 0 !important;
+    overflow: hidden;
     width: 210mm;
   }
 
   .screen-shell {
+    background: #ffffff !important;
+    height: 297mm !important;
+    margin: 0 !important;
     padding: 0 !important;
+    width: 210mm !important;
   }
 
   .toolbar {
@@ -20,27 +31,384 @@
   }
 
   .resume {
+    background: #ffffff !important;
     box-shadow: none !important;
+    display: grid !important;
+    grid-template-columns: 58mm 152mm !important;
+    height: 297mm !important;
     margin: 0 !important;
     max-width: none !important;
-    min-height: 297mm;
-    width: 210mm;
+    min-height: 297mm !important;
+    overflow: hidden !important;
+    page-break-after: avoid;
+    page-break-before: avoid;
+    page-break-inside: avoid;
+    width: 210mm !important;
   }
 
   .sidebar {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    background: linear-gradient(180deg, var(--sidebar) 0%, #0a2339 60%, #081927 100%) !important;
+    color: #ffffff !important;
+    height: 297mm !important;
+    padding: 7mm 5mm 6mm !important;
   }
 
-  a {
-    text-decoration: none;
+  .main {
+    height: 297mm !important;
+    overflow: hidden !important;
+    padding: 7mm 7mm 6mm !important;
   }
 
+  .portrait {
+    border-width: 1.4pt !important;
+    margin-bottom: 4mm !important;
+    width: 27mm !important;
+  }
+
+  .identity {
+    margin-bottom: 3.2mm !important;
+    padding-bottom: 3.2mm !important;
+  }
+
+  .identity h1 {
+    font-size: 17pt !important;
+    line-height: 0.95 !important;
+    margin-bottom: 4pt !important;
+  }
+
+  .identity p {
+    font-size: 7.3pt !important;
+    line-height: 1.2 !important;
+  }
+
+  .side-section {
+    margin-bottom: 3mm !important;
+    padding-bottom: 3mm !important;
+  }
+
+  .side-title,
+  .section-title {
+    gap: 5pt !important;
+    margin-bottom: 5pt !important;
+  }
+
+  .side-title h2,
+  .section-title h2 {
+    font-size: 8.8pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .icon-badge {
+    height: 15pt !important;
+    width: 15pt !important;
+  }
+
+  .icon-badge svg {
+    height: 9pt !important;
+    width: 9pt !important;
+  }
+
+  .contact-list,
+  .simple-list,
+  .language-list {
+    gap: 3.4pt !important;
+  }
+
+  .contact-list li {
+    font-size: 7.2pt !important;
+    gap: 4pt !important;
+    grid-template-columns: 9pt 1fr !important;
+    line-height: 1.18 !important;
+  }
+
+  .contact-list svg {
+    height: 8.5pt !important;
+    width: 8.5pt !important;
+  }
+
+  .simple-list li {
+    font-size: 7.2pt !important;
+    line-height: 1.18 !important;
+    padding-left: 6pt !important;
+  }
+
+  .simple-list li::before {
+    height: 2.6pt !important;
+    top: 4pt !important;
+    width: 2.6pt !important;
+  }
+
+  .tool-list {
+    gap: 2.6pt 5pt !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .tool-list li {
+    font-size: 6.8pt !important;
+  }
+
+  .language-list li {
+    font-size: 7pt !important;
+    line-height: 1.18 !important;
+  }
+
+  .qr-card {
+    border-radius: 5pt !important;
+    gap: 4pt !important;
+    grid-template-columns: 34pt 1fr !important;
+    padding: 4pt !important;
+  }
+
+  .qr-card svg {
+    border-radius: 3pt !important;
+    height: 34pt !important;
+    padding: 2pt !important;
+    width: 34pt !important;
+  }
+
+  .qr-card p {
+    font-size: 6.4pt !important;
+    line-height: 1.12 !important;
+  }
+
+  .topline {
+    margin-bottom: 3mm !important;
+    padding-bottom: 3mm !important;
+  }
+
+  .kicker {
+    font-size: 7.2pt !important;
+    margin-bottom: 4pt !important;
+  }
+
+  .summary {
+    font-size: 8.2pt !important;
+    line-height: 1.28 !important;
+  }
+
+  .focus-list {
+    gap: 3pt !important;
+    margin-top: 5pt !important;
+  }
+
+  .focus-list span {
+    border-radius: 20pt !important;
+    font-size: 6.7pt !important;
+    padding: 2.6pt 4.8pt !important;
+  }
+
+  .availability {
+    border-left-width: 2.2pt !important;
+    border-radius: 5pt !important;
+    font-size: 7.4pt !important;
+    line-height: 1.25 !important;
+    margin-top: 5pt !important;
+    padding: 4pt 5pt !important;
+  }
+
+  .availability strong {
+    margin-bottom: 1pt !important;
+  }
+
+  .section {
+    margin-bottom: 3mm !important;
+    padding-bottom: 3mm !important;
+  }
+
+  .section-title {
+    margin-bottom: 5pt !important;
+  }
+
+  .timeline {
+    gap: 5pt !important;
+  }
+
+  .entry {
+    gap: 1pt !important;
+  }
+
+  .entry h3 {
+    font-size: 8.3pt !important;
+    line-height: 1.12 !important;
+  }
+
+  .entry .org {
+    font-size: 7.5pt !important;
+    line-height: 1.12 !important;
+  }
+
+  .entry time {
+    font-size: 7pt !important;
+    margin-left: 6pt !important;
+  }
+
+  .entry p {
+    font-size: 7.4pt !important;
+    line-height: 1.22 !important;
+    margin-top: 1pt !important;
+  }
+
+  .project-grid {
+    gap: 4pt !important;
+  }
+
+  .project {
+    border-radius: 5pt !important;
+    padding: 5pt !important;
+  }
+
+  .project h3 {
+    font-size: 7.9pt !important;
+    line-height: 1.08 !important;
+    margin-bottom: 2pt !important;
+  }
+
+  .project p {
+    font-size: 7.1pt !important;
+    line-height: 1.18 !important;
+  }
+
+  .print-compact .project:nth-child(n + 4),
+  .print-dense .project:nth-child(n + 3) {
+    display: none !important;
+  }
+
+  .print-dense .sidebar {
+    padding-top: 6mm !important;
+  }
+
+  .print-dense .portrait {
+    width: 24mm !important;
+    margin-bottom: 3mm !important;
+  }
+
+  .print-dense .identity {
+    margin-bottom: 2.6mm !important;
+    padding-bottom: 2.6mm !important;
+  }
+
+  .print-dense .identity h1 {
+    font-size: 15.8pt !important;
+  }
+
+  .print-dense .side-section {
+    margin-bottom: 2.5mm !important;
+    padding-bottom: 2.5mm !important;
+  }
+
+  .print-dense .main {
+    padding-top: 6mm !important;
+    padding-bottom: 5mm !important;
+  }
+
+  .print-dense .summary {
+    font-size: 7.8pt !important;
+  }
+
+  .print-dense .section {
+    margin-bottom: 2.4mm !important;
+    padding-bottom: 2.4mm !important;
+  }
+
+  .print-dense .timeline {
+    gap: 4pt !important;
+  }
+
+  .print-dense .entry p {
+    font-size: 7pt !important;
+    line-height: 1.16 !important;
+  }
+
+  .print-dense .main .section:last-child .entry p,
+  .print-compact .main .section:last-child .entry p,
+  .print-balanced .main .section:last-child .entry p {
+    display: none !important;
+  }
+
+  .print-dense .focus-list span {
+    font-size: 6.4pt !important;
+  }
+
+  .print-dense .availability {
+    font-size: 7pt !important;
+    line-height: 1.16 !important;
+  }
+
+  .print-dense .tool-list li {
+    font-size: 6.5pt !important;
+  }
+
+  .print-dense .simple-list li {
+    font-size: 6.9pt !important;
+  }
+
+  .print-dense .qr-card {
+    display: none !important;
+  }
+
+  .resume,
+  .sidebar,
+  .main,
+  .topline,
   .section,
   .entry,
   .project,
   .side-section {
-    break-inside: avoid;
-    page-break-inside: avoid;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .topline,
+  .section {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+}
+
+@media print and (width: 8.5in) {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+
+  html,
+  body,
+  .screen-shell {
+    height: 11in !important;
+    width: 8.5in !important;
+  }
+
+  .resume {
+    grid-template-columns: 2.25in 6.25in !important;
+    height: 11in !important;
+    min-height: 11in !important;
+    width: 8.5in !important;
+  }
+
+  .sidebar,
+  .main {
+    height: 11in !important;
+  }
+}
+
+@media print {
+  /*
+    Keep this short fallback block last so older PDF engines still preserve
+    the one-page shape even when they skip newer break-* declarations.
+  */
+  .resume {
+    max-height: 297mm !important;
+  }
+
+  .sidebar {
+    max-height: 297mm !important;
+  }
+
+  .main {
+    max-height: 297mm !important;
   }
 }
