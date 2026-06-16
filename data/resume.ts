@@ -31,6 +31,18 @@ export type ResumeContact = {
   github: string;
 };
 
+export type ResumeTemplate = "modern-sidebar" | "professional-corporate" | "minimal-clean";
+
+export type TypeScale = "compact" | "normal" | "wide";
+
+export type ResumeDensity = "compact" | "normal" | "airy";
+
+export type BuilderSettings = {
+  template: ResumeTemplate;
+  typeScale: TypeScale;
+  density: ResumeDensity;
+};
+
 export type ResumeData = {
   name: string;
   photo?: string;
@@ -50,86 +62,104 @@ export type ResumeData = {
 };
 
 export const exampleResumeData: ResumeData = {
-  name: "Alex Rivera",
+  name: "Sofía Herrera",
   photo: "",
-  headline: "Frontend Developer | React | UX Engineering",
+  headline: "Operations Analyst | Process Improvement | Data Reporting",
   contact: {
-    email: "alex.rivera@example.com",
-    phone: "+1 555 0199",
-    location: "Remote / Guatemala",
-    portfolio: "https://example.com",
-    linkedIn: "https://www.linkedin.com/in/alex-rivera/",
-    github: "https://github.com/alexrivera",
+    email: "sofia.herrera@example.com",
+    phone: "+1 555 0184",
+    location: "Remote / Ciudad de México",
+    portfolio: "https://portfolio.example.com",
+    linkedIn: "https://www.linkedin.com/in/sofia-herrera/",
+    github: "https://github.com/sofia-herrera",
   },
   summary:
-    "Frontend developer focused on building accessible, maintainable web products with React, TypeScript and thoughtful user experiences. Comfortable translating product goals into clean interfaces, reusable components and production-ready delivery.",
+    "Operations analyst with experience improving workflows, preparing executive reports and coordinating cross-functional initiatives. Combines structured problem solving, data analysis and clear communication to help teams make faster decisions.",
   focus: [
-    "React",
-    "TypeScript",
-    "Design systems",
-    "Accessibility",
-    "Performance",
-    "Product thinking",
+    "Process improvement",
+    "Reporting",
+    "Stakeholder coordination",
+    "Operations planning",
+    "Data analysis",
+    "Documentation",
   ],
   sections: {
     experience: [
       {
-        title: "Frontend Developer",
-        organization: "Northstar Studio",
+        title: "Operations Analyst",
+        organization: "Northstar Logistics",
         period: "2024 - Present",
         description:
-          "Built reusable React components, improved dashboard workflows and collaborated with product teams to ship responsive interfaces.",
+          "Designed weekly performance reports, mapped recurring operational bottlenecks and coordinated process improvements across fulfillment and support teams.",
       },
       {
-        title: "Web Developer",
-        organization: "Freelance",
+        title: "Customer Operations Coordinator",
+        organization: "Brightlane Retail Group",
         period: "2022 - 2024",
         description:
-          "Delivered landing pages, admin tools and portfolio sites with strong attention to content structure, performance and handoff quality.",
+          "Managed priority cases, documented service patterns and improved handoff quality between store, warehouse and customer support teams.",
+      },
+      {
+        title: "Administrative Assistant",
+        organization: "Atlas Financial Services",
+        period: "2020 - 2022",
+        description:
+          "Prepared internal documentation, reconciled operational records and supported monthly reporting for administrative leadership.",
       },
     ],
     projects: [
       {
-        name: "LaunchBoard",
+        name: "Fulfillment KPI Dashboard",
         description:
-          "Internal planning dashboard with project milestones, filters and status summaries for small teams.",
+          "Consolidated service-level indicators into a weekly dashboard used by operations managers.",
       },
       {
-        name: "PatternKit",
+        name: "Returns Workflow Redesign",
         description:
-          "Reusable component library documenting forms, cards, navigation and responsive layout patterns.",
+          "Reduced duplicate manual checks by documenting a clearer intake and escalation process.",
+      },
+      {
+        name: "Knowledge Base Refresh",
+        description:
+          "Updated internal procedures and templates to improve onboarding and reduce repeated questions.",
       },
     ],
     education: [
       {
-        degree: "B.S. Computer Science",
-        institution: "Open University",
+        degree: "B.B.A. Operations Management",
+        institution: "Metropolitan Business School",
         period: "2019 - 2023",
         detail:
-          "Coursework in software engineering, databases, human-computer interaction and web systems.",
+          "Coursework in process management, business analytics, supply chain planning and finance.",
       },
     ],
     skills: [
-      "Reusable UI architecture",
-      "Responsive layout",
-      "Accessibility",
-      "API integration",
-      "Technical documentation",
-      "Design collaboration",
+      "Operations reporting",
+      "Process mapping",
+      "Executive summaries",
+      "Cross-functional coordination",
+      "Customer experience",
+      "Data quality review",
     ],
     tools: [
-      "React",
-      "Next.js",
-      "TypeScript",
-      "Node.js",
-      "Git",
-      "Figma",
-      "Vercel",
-      "Playwright",
+      "Excel",
+      "Google Sheets",
+      "Power BI",
+      "Notion",
+      "Airtable",
+      "Slack",
+      "Jira",
+      "SQL basics",
     ],
     languages: [
       { name: "English", level: "Professional" },
-      { name: "Spanish", level: "Conversational" },
+      { name: "Spanish", level: "Native" },
     ],
   },
+};
+
+export const defaultBuilderSettings: BuilderSettings = {
+  template: "modern-sidebar",
+  typeScale: "normal",
+  density: "normal",
 };

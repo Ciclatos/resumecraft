@@ -1,12 +1,12 @@
 import {
-  Bot,
+  BarChart3,
   BriefcaseBusiness,
   Code2,
   GraduationCap,
   LayoutDashboard,
   LineChart,
-  Newspaper,
-  Workflow,
+  Network,
+  Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { demoProfileData, profile } from "./profile";
@@ -15,7 +15,6 @@ import type { ResumeData, ResumeEntry, ResumeProject } from "./resume";
 export type ResumeVariant = ResumeData & {
   slug: string;
   variantLabel: string;
-  name: string;
   printMode: "balanced" | "compact" | "dense";
   metaDescription: string;
   showQr: boolean;
@@ -27,284 +26,236 @@ export type ResumeVariant = ResumeData & {
   };
 };
 
-const baseExperience: ResumeEntry[] = [
+const operationsExperience: ResumeEntry[] = [
   {
-    title: "Productor de audio",
-    organization: "Agencia Ocote",
-    period: "2024 - 2026",
+    title: "Operations Analyst",
+    organization: "Northstar Logistics",
+    period: "2024 - Present",
     description:
-      "Producción, edición y postproducción de audio para proyectos periodísticos y de comunicación digital, con atención al detalle, planificación y coordinación de entregables.",
+      "Designed weekly performance reports, mapped recurring bottlenecks and coordinated process improvements across fulfillment and support teams.",
   },
   {
-    title: "Soporte técnico y atención al cliente",
-    organization: "TELUS - Google Fi",
-    period: "2024",
+    title: "Customer Operations Coordinator",
+    organization: "Brightlane Retail Group",
+    period: "2022 - 2024",
     description:
-      "Resolución de incidencias, atención al cliente, configuración de sistemas, documentación de casos y seguimiento ordenado de solicitudes.",
+      "Managed priority cases, documented service patterns and improved handoff quality between store, warehouse and customer support teams.",
   },
   {
-    title: "Productor de audio",
-    organization: "FeatMia",
-    period: "2022",
+    title: "Administrative Assistant",
+    organization: "Atlas Financial Services",
+    period: "2020 - 2022",
     description:
-      "Producción de audio para campañas publicitarias y colaboración con equipos de marketing para convertir objetivos de comunicación en piezas claras.",
+      "Prepared internal documentation, reconciled operational records and supported monthly reporting for administrative leadership.",
+  },
+];
+
+const technologyExperience: ResumeEntry[] = [
+  {
+    title: "Frontend Developer",
+    organization: "Luma Systems",
+    period: "2024 - Present",
+    description:
+      "Built production React interfaces, improved reusable component patterns and collaborated with product teams on accessible workflows.",
   },
   {
-    title: "Prácticas técnicas",
-    organization: "Hospittalia",
-    period: "2019",
+    title: "Web Developer",
+    organization: "Orbit Studio",
+    period: "2022 - 2024",
     description:
-      "Prácticas supervisadas en entorno técnico, con apoyo en actividades operativas, documentación y seguimiento de procesos.",
+      "Delivered responsive websites, documentation portals and internal tools with clean handoff practices and strong performance budgets.",
+  },
+  {
+    title: "Technical Support Specialist",
+    organization: "CloudBridge Services",
+    period: "2020 - 2022",
+    description:
+      "Resolved technical incidents, documented recurring issues and translated customer feedback into product improvement notes.",
   },
 ];
 
 const projects: ResumeProject[] = [
   {
-    name: "PhyLab",
+    name: "Fulfillment KPI Dashboard",
     description:
-      "Plataforma educativa interactiva para Física I con simuladores, gráficas dinámicas y tutor IA contextual.",
+      "Consolidated service-level indicators into a weekly dashboard used by operations managers.",
   },
   {
-    name: "MedSync",
+    name: "Returns Workflow Redesign",
     description:
-      "Sistema hospitalario privado en desarrollo para gestión de pacientes, cirugías, finanzas, inventario y cuentas por cobrar.",
+      "Reduced duplicate manual checks by documenting a clearer intake and escalation process.",
   },
   {
-    name: "Project Pulse",
+    name: "Knowledge Base Refresh",
     description:
-      "Herramienta para crear y manipular música mediante código, conectando producción digital con pensamiento técnico.",
-  },
-  {
-    name: "Amaranto Parfum",
-    description:
-      "Prototipo de personalización de perfumes apoyado por IA y automatización para mejorar la experiencia de usuario.",
+      "Updated internal procedures and templates to improve onboarding and reduce repeated questions.",
   },
 ];
+
+const techProjects: ResumeProject[] = [
+  {
+    name: "Component Library",
+    description:
+      "Reusable UI primitives for forms, navigation, cards and data-heavy application screens.",
+  },
+  {
+    name: "Release Notes Portal",
+    description:
+      "Static documentation site for product updates, changelogs and customer-facing guides.",
+  },
+  {
+    name: "Support Insights",
+    description:
+      "Small dashboard prototype for categorizing customer issues and surfacing recurring patterns.",
+  },
+];
+
+const commonOperationsData = {
+  name: profile.name,
+  photo: demoProfileData.photo,
+  contact: demoProfileData.contact,
+  headline: profile.headline,
+  focus: [
+    "Process improvement",
+    "Reporting",
+    "Operations planning",
+    "Stakeholder coordination",
+    "Data analysis",
+    "Documentation",
+  ],
+  sections: {
+    experience: operationsExperience,
+    projects,
+    education: profile.education,
+    languages: demoProfileData.languages,
+    skills: [
+      "Operations reporting",
+      "Process mapping",
+      "Executive summaries",
+      "Cross-functional coordination",
+      "Customer experience",
+      "Data quality review",
+    ],
+    tools: [
+      "Excel",
+      "Google Sheets",
+      "Power BI",
+      "Notion",
+      "Airtable",
+      "Slack",
+      "Jira",
+      "SQL basics",
+    ],
+  },
+};
 
 export const variants: Record<string, ResumeVariant> = {
   base: {
     slug: "base",
-    variantLabel: "CV General",
-    name: profile.name,
-    photo: demoProfileData.photo,
-    contact: demoProfileData.contact,
+    variantLabel: "General Demo",
     printMode: "balanced",
     metaDescription:
-      "Perfil general de Carlos Díaz en tecnología, IA, automatización, desarrollo web y contenidos digitales.",
-    headline: profile.headline,
-    summary:
-      "Licenciado en Producción de Audio y Música Digital con énfasis en Music Business y estudiante de Ingeniería en Sistemas. Experiencia en tecnología, automatización, desarrollo web, producción de contenidos digitales, atención al cliente, análisis de información, documentación y proyectos con IA.",
-    focus: [
-      "IA aplicada",
-      "Automatización",
-      "Desarrollo web",
-      "Contenido digital",
-      "Documentación",
-      "Atención al cliente",
-    ],
+      "Fictional ResumeCraft demo showing a professional operations resume with structured data and PDF export.",
     showQr: true,
-    sections: {
-      experience: baseExperience,
-      projects,
-      education: profile.education,
-      languages: demoProfileData.languages,
-      skills: [
-        "Automatización de procesos",
-        "Desarrollo web con React",
-        "Análisis y documentación",
-        "Producción de contenidos digitales",
-        "Atención al cliente",
-        "Investigación con IA",
-        "Comunicación clara",
-        "Aprendizaje continuo",
-      ],
-      tools: [
-        "ChatGPT",
-        "Claude",
-        "Codex",
-        "Kimi",
-        "n8n",
-        "JavaScript",
-        "React",
-        "Node.js",
-        "Git",
-        "PostgreSQL",
-      ],
-    },
+    ...commonOperationsData,
+    summary:
+      "Operations analyst with experience improving workflows, preparing executive reports and coordinating cross-functional initiatives. Combines structured problem solving, data analysis and clear communication to help teams make faster decisions.",
     icons: {
-      summary: Bot,
+      summary: LayoutDashboard,
       experience: BriefcaseBusiness,
-      projects: Code2,
+      projects: BarChart3,
       education: GraduationCap,
     },
   },
   edteam: {
     slug: "edteam",
-    variantLabel: "CV EDteam",
-    name: profile.name,
-    photo: demoProfileData.photo,
-    contact: demoProfileData.contact,
+    variantLabel: "Technology Demo",
+    name: "Mateo Cruz",
+    photo: "",
+    contact: {
+      email: "mateo.cruz@example.com",
+      phone: "+1 555 0128",
+      location: "Remote / Bogotá",
+      portfolio: "https://mateo.example.com",
+      linkedIn: "https://www.linkedin.com/in/mateo-cruz/",
+      github: "https://github.com/mateo-cruz",
+    },
     printMode: "compact",
     metaDescription:
-      "CV de Carlos Díaz adaptado a Asistente de Contenidos en EDteam.",
-    headline:
-      "Tecnología, IA y Comunicación | Producción de Contenidos Digitales",
+      "Fictional ResumeCraft technology demo for a frontend developer profile.",
+    headline: "Frontend Developer | React | Product Engineering",
     summary:
-      "Perfil híbrido entre tecnología, inteligencia artificial y comunicación. Formación en producción digital y estudios actuales de Ingeniería en Sistemas, con experiencia investigando, sintetizando información, documentando procesos y creando contenidos para entornos digitales. Interés fuerte en aprendizaje continuo, educación tecnológica y uso responsable de IA para apoyar equipos de contenido.",
+      "Frontend developer focused on building accessible, maintainable web products with React, TypeScript and thoughtful user experiences. Comfortable translating product goals into clean interfaces and production-ready delivery.",
     focus: [
-      "Investigación",
-      "Síntesis",
-      "IA",
-      "Contenido digital",
-      "Documentación",
-      "Comunicación",
+      "React",
+      "TypeScript",
+      "Design systems",
+      "Accessibility",
+      "Performance",
+      "Product thinking",
     ],
     showQr: true,
     sections: {
-      experience: [
+      experience: technologyExperience,
+      projects: techProjects,
+      education: [
         {
-          ...baseExperience[0],
-          description:
-            "Producción y postproducción de contenidos de audio para proyectos periodísticos, cuidando claridad narrativa, estructura, calidad técnica y comunicación con equipos editoriales.",
+          degree: "B.S. Computer Science",
+          institution: "Open Technology University",
+          period: "2018 - 2022",
+          detail:
+            "Coursework in software engineering, databases, human-computer interaction and web systems.",
         },
-        {
-          ...baseExperience[1],
-          description:
-            "Atención a usuarios, documentación de casos, diagnóstico de incidencias y explicación clara de soluciones técnicas en un entorno de alto volumen.",
-        },
-        {
-          ...baseExperience[2],
-          description:
-            "Producción de piezas para campañas publicitarias, alineando contenido, audiencia y objetivos de marca junto a equipos de marketing.",
-        },
-        baseExperience[3],
       ],
-      projects,
-      education: profile.education,
-      languages: demoProfileData.languages,
+      languages: [
+        { name: "Spanish", level: "Native" },
+        { name: "English", level: "Professional" },
+      ],
       skills: [
-        "Investigación y curación de información",
-        "Síntesis de temas técnicos",
-        "Redacción y documentación",
-        "Producción de contenidos digitales",
-        "Uso de IA para productividad",
-        "Comunicación con equipos",
-        "Organización de entregables",
-        "Aprendizaje continuo",
+        "Reusable UI architecture",
+        "Responsive layout",
+        "Accessibility",
+        "API integration",
+        "Technical documentation",
+        "Design collaboration",
       ],
       tools: [
-        "ChatGPT",
-        "Claude",
-        "Codex",
-        "Kimi",
-        "Google Sheets",
-        "PowerPoint",
         "React",
-        "JavaScript",
-        "n8n",
-        "Documentación",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "Git",
+        "Figma",
+        "Vercel",
+        "Playwright",
       ],
     },
     icons: {
-      summary: Newspaper,
+      summary: Sparkles,
       experience: BriefcaseBusiness,
-      projects: Workflow,
+      projects: Code2,
       education: GraduationCap,
     },
   },
   walmart: {
     slug: "walmart",
-    variantLabel: "CV Walmart",
-    name: profile.name,
-    photo: demoProfileData.photo,
-    contact: demoProfileData.contact,
+    variantLabel: "Corporate Demo",
     printMode: "dense",
     metaDescription:
-      "CV de Carlos Díaz adaptado a Programador de Pedidos en Walmart.",
-    headline:
-      "Análisis de Datos | Reportes | Servicio al Cliente | Organización Operativa",
-    summary:
-      "Estudiante de Ingeniería en Sistemas con experiencia en servicio al cliente, soporte técnico, documentación y seguimiento de solicitudes. Perfil ordenado y analítico, con manejo de actividades simultáneas, Excel intermedio, elaboración de reportes y comunicación efectiva. IA y automatización como apoyo para productividad, análisis y organización.",
-    focus: [
-      "Excel intermedio",
-      "Análisis de datos",
-      "Reportes",
-      "Seguimiento",
-      "Servicio al cliente",
-      "Planificación",
-    ],
+      "Fictional ResumeCraft corporate demo for operations, administration and retail roles.",
     showQr: false,
+    ...commonOperationsData,
+    headline:
+      "Operations Coordination | Retail Analytics | Administrative Reporting",
+    summary:
+      "Corporate operations profile with experience in service coordination, reporting, documentation and process follow-up. Strong fit for structured environments that require clarity, reliability and measurable execution.",
     sections: {
-      experience: [
-        {
-          ...baseExperience[0],
-          description:
-            "Planificación de entregables, organización de archivos, coordinación con equipos y cumplimiento de procesos.",
-        },
-        {
-          ...baseExperience[1],
-          description:
-            "Atención a clientes, resolución de solicitudes, documentación de casos y seguimiento de incidencias con orden y calidad.",
-        },
-        {
-          ...baseExperience[2],
-          description:
-            "Atención a requerimientos, orden de materiales y apoyo en entregables para campañas.",
-        },
-        baseExperience[3],
-      ],
-      projects: [
-        {
-          name: "MedSync",
-          description:
-            "Sistema hospitalario con módulos de pacientes, finanzas, inventario y cuentas por cobrar.",
-        },
-        {
-          name: "PhyLab",
-          description:
-            "Plataforma educativa con visualización de datos, simuladores y reportes de aprendizaje.",
-        },
-        {
-          name: "Amaranto Parfum",
-          description:
-            "Prototipo con automatización para ordenar preferencias de clientes.",
-        },
-        {
-          name: "Project Pulse",
-          description:
-            "Herramienta para estructurar procesos y manipular información digital.",
-        },
-      ],
-      education: profile.education,
-      languages: demoProfileData.languages,
-      skills: [
-        "Análisis de datos",
-        "Excel intermedio",
-        "Elaboración de reportes",
-        "Seguimiento de solicitudes",
-        "Atención a clientes internos y externos",
-        "Manejo de múltiples actividades",
-        "Planificación y orden",
-        "Comunicación efectiva",
-        "Iniciativa y mejora continua",
-      ],
-      tools: [
-        "Excel intermedio",
-        "Google Sheets",
-        "PowerPoint",
-        "Reportes",
-        "Diagnósticos",
-        "Conclusiones",
-        "Documentación técnica",
-        "ChatGPT",
-        "Automatización",
-        "APIs",
-      ],
+      ...commonOperationsData.sections,
       additional:
-        "Disponibilidad compatible con CD Bárcenas: lunes 4:00 am a 2:00 pm; martes a viernes 6:00 am a 1:00 pm; sábado 7:00 am a 11:00 am. Disposición presencial y coordinación con áreas internas.",
+        "Open to hybrid operations, retail administration and business reporting roles. Comfortable coordinating with internal teams and maintaining accurate records.",
     },
     icons: {
-      summary: LayoutDashboard,
+      summary: Network,
       experience: BriefcaseBusiness,
       projects: LineChart,
       education: GraduationCap,

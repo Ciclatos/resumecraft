@@ -86,10 +86,11 @@ export default function Home() {
       <section className="demo-band">
         <div>
           <p className="kicker">Demos incluidas</p>
-          <h2>Las rutas personales ahora viven como ejemplos.</h2>
+          <h2>Ejemplos ficticios para explorar plantillas.</h2>
           <p>
-            ResumeCraft conserva el CV original como demo pública del motor de
-            plantillas, separado del builder principal.
+            ResumeCraft incluye perfiles profesionales ficticios para mostrar
+            el motor de datos, plantillas y exportación PDF sin exponer
+            información personal real.
           </p>
         </div>
         <div className="demo-links">
@@ -99,12 +100,37 @@ export default function Home() {
           </Link>
           <Link href="/cv/edteam">
             <FileText size={18} aria-hidden="true" />
-            EDteam
+            Tecnología
           </Link>
           <Link href="/cv/walmart">
             <FileText size={18} aria-hidden="true" />
-            Walmart
+            Corporativo
           </Link>
+        </div>
+      </section>
+
+      <section className="roadmap-band" aria-label="Roadmap">
+        <div className="roadmap-intro">
+          <p className="kicker">Roadmap</p>
+          <h2>Construido por etapas, con privacidad primero.</h2>
+          <p>
+            La versión actual se concentra en hacer bien el builder antes de
+            agregar cuentas, backend o automatizaciones inteligentes.
+          </p>
+        </div>
+        <div className="roadmap-grid">
+          <RoadmapCard
+            title="V1"
+            items={["Builder", "Plantillas", "PDF"]}
+          />
+          <RoadmapCard
+            title="V2"
+            items={["Login", "Guardar CVs", "Historial"]}
+          />
+          <RoadmapCard
+            title="V3"
+            items={["IA para vacantes", "Importar LinkedIn", "Importar GitHub"]}
+          />
         </div>
       </section>
     </main>
@@ -127,6 +153,19 @@ function Feature({
       </span>
       <h2>{title}</h2>
       <p>{text}</p>
+    </article>
+  );
+}
+
+function RoadmapCard({ title, items }: { title: string; items: string[] }) {
+  return (
+    <article className="roadmap-card">
+      <h3>{title}</h3>
+      <ul>
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
     </article>
   );
 }

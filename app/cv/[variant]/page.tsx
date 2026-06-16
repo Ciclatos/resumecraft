@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
-    title: `${data.variantLabel} | ResumeCraft Demo`,
+    title: data.variantLabel,
     description: data.metaDescription,
   };
 }
@@ -37,7 +37,7 @@ export default async function CvVariantPage({ params }: PageProps) {
   return (
     <Resume
       data={data}
-      label={`Demo personal: ${data.variantLabel}`}
+      label={`Demo ficticio: ${data.variantLabel}`}
       printMode={data.printMode}
       showQr={data.showQr}
       icons={data.icons}

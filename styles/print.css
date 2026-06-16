@@ -420,6 +420,137 @@
     max-height: 297mm !important;
   }
 
+  .resume-scale-compact {
+    --scale-body: 0.9;
+    --scale-leading: 1.16;
+  }
+
+  .resume-scale-normal {
+    --scale-body: 1;
+    --scale-leading: 1.24;
+  }
+
+  .resume-scale-wide {
+    --scale-body: 1.08;
+    --scale-leading: 1.34;
+  }
+
+  .resume-density-compact {
+    --density-gap: 0.75;
+    --density-pad: 0.88;
+  }
+
+  .resume-density-normal {
+    --density-gap: 1;
+    --density-pad: 1;
+  }
+
+  .resume-density-airy {
+    --density-gap: 1.18;
+    --density-pad: 1.12;
+  }
+
+  .resume-template-professional-corporate,
+  .resume-template-minimal-clean {
+    display: block !important;
+    height: 297mm !important;
+    width: 210mm !important;
+  }
+
+  .corporate-header,
+  .minimal-header {
+    border-bottom: 1px solid var(--line) !important;
+    display: grid !important;
+    gap: 4pt !important;
+    padding: 7mm 9mm 4mm !important;
+  }
+
+  .corporate-header h1,
+  .minimal-header h1 {
+    font-size: calc(18pt * var(--scale-body, 1)) !important;
+    line-height: 0.95 !important;
+    margin: 0 0 2pt !important;
+  }
+
+  .corporate-header p,
+  .minimal-header p,
+  .contact-bar li {
+    font-size: calc(7.2pt * var(--scale-body, 1)) !important;
+    line-height: var(--scale-leading, 1.2) !important;
+  }
+
+  .template-header-identity {
+    gap: 8pt !important;
+  }
+
+  .template-header-photo {
+    border-width: 1pt !important;
+    width: 28pt !important;
+  }
+
+  .contact-bar {
+    gap: 2pt 7pt !important;
+  }
+
+  .corporate-main {
+    display: grid !important;
+    gap: 5mm !important;
+    grid-template-columns: 1fr 45mm !important;
+    height: auto !important;
+    padding: 4.5mm 9mm 6mm !important;
+  }
+
+  .resume-template-professional-corporate .resume-lists {
+    border-left: 1px solid var(--line) !important;
+    padding-left: 4mm !important;
+  }
+
+  .resume-template-minimal-clean {
+    padding: 0 10mm 7mm !important;
+  }
+
+  .resume-template-minimal-clean .minimal-header {
+    margin: 0 -10mm 4mm !important;
+    padding-left: 10mm !important;
+    padding-right: 10mm !important;
+  }
+
+  .minimal-main {
+    gap: calc(2.8mm * var(--density-gap, 1)) !important;
+  }
+
+  .resume-lists {
+    gap: calc(7pt * var(--density-gap, 1)) !important;
+  }
+
+  .list-block h2 {
+    font-size: calc(7.7pt * var(--scale-body, 1)) !important;
+    margin-bottom: 4pt !important;
+  }
+
+  .list-block ul {
+    gap: calc(2.8pt * var(--density-gap, 1)) !important;
+  }
+
+  .list-block li {
+    font-size: calc(6.8pt * var(--scale-body, 1)) !important;
+    line-height: var(--scale-leading, 1.16) !important;
+  }
+
+  .resume .summary {
+    font-size: calc(8.2pt * var(--scale-body, 1)) !important;
+    line-height: var(--scale-leading, 1.28) !important;
+  }
+
+  .resume .section {
+    margin-bottom: calc(3mm * var(--density-gap, 1)) !important;
+    padding-bottom: calc(3mm * var(--density-gap, 1)) !important;
+  }
+
+  .resume .timeline {
+    gap: calc(5pt * var(--density-gap, 1)) !important;
+  }
+
   .sidebar {
     max-height: 297mm !important;
   }

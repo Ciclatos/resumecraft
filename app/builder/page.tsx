@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ResumeBuilder } from "../../components/ResumeBuilder";
 
 export const metadata: Metadata = {
-  title: "Builder | ResumeCraft",
+  title: "Builder",
   description:
     "Crea un CV editable, guárdalo en el navegador y expórtalo a PDF con ResumeCraft.",
 };

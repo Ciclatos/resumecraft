@@ -1,38 +1,31 @@
 export const profile = {
-  name: "Carlos Díaz",
-  photo: "/foto.png",
-  email: "carloseduardo151211@gmail.com",
-  phone: "+502 5683-8132",
-  location: "Guatemala, Amatitlán",
-  linkedIn: "https://www.linkedin.com/in/carlos-diaz-00a014303/",
-  github: "https://github.com/Ciclatos",
-  portfolio: "https://carlos-diaz-portfolio.vercel.app",
+  name: "Sofía Herrera",
+  photo: "",
+  email: "sofia.herrera@example.com",
+  phone: "+1 555 0184",
+  location: "Remote / Ciudad de México",
+  linkedIn: "https://www.linkedin.com/in/sofia-herrera/",
+  github: "https://github.com/sofia-herrera",
+  portfolio: "https://portfolio.example.com",
   headline:
-    "IA y Automatización | Desarrollo Web | Producción de Contenidos Digitales",
+    "Operations Analyst | Process Improvement | Data Reporting",
   education: [
     {
-      degree: "Ingeniería en Sistemas e Informática",
-      institution: "Universidad Mariano Gálvez",
-      period: "2025 - Actualidad",
-      detail: "Estudios universitarios iniciados en tecnología, sistemas y análisis de información.",
+      degree: "B.B.A. Operations Management",
+      institution: "Metropolitan Business School",
+      period: "2019 - 2023",
+      detail: "Coursework in process management, business analytics, supply chain planning and finance.",
     },
     {
-      degree:
-        "Licenciatura en Producción de Audio y Música Digital con énfasis en Music Business",
-      institution: "Universidad Panamericana",
-      period: "2020 - 2025",
-      detail: "Formación en producción digital, gestión de proyectos creativos y comunicación.",
-    },
-    {
-      degree: "Bachillerato en Ciencias y Letras con Orientación en Computación",
-      institution: "Colegio Internacionales",
-      period: "2018 - 2019",
-      detail: "Base académica en computación, documentación y herramientas digitales.",
+      degree: "Certificate in Business Analytics",
+      institution: "Civic Data Institute",
+      period: "2024",
+      detail: "Focused training in dashboards, stakeholder reporting and operational metrics.",
     },
   ],
   languages: [
-    { name: "Español", level: "Nativo" },
-    { name: "Inglés", level: "Nivel alto" },
+    { name: "Spanish", level: "Native" },
+    { name: "English", level: "Professional" },
   ],
 };
 

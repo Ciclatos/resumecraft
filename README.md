@@ -2,27 +2,29 @@
 
 ResumeCraft is an open source CV builder for creating professional, editable resumes and exporting them to PDF directly from the browser.
 
-It started as a personal CV generator and now keeps that original layout as a reusable product: structured resume data, a modern sidebar template, browser printing styles, demo variants and a simple editable MVP.
+It keeps the strongest parts of the original prototype as a reusable product: structured resume data, a modern sidebar template, browser printing styles, demo variants and an editable MVP.
 
 ## Features
 
 - Editable resume builder at `/builder`.
-- Modern CV template with a sidebar layout.
+- Three selectable templates: Modern Sidebar, Professional Corporate and Minimal Clean.
 - Real-time preview while editing.
 - PDF export through the browser print dialog.
 - Local browser storage with `localStorage`.
 - No login, backend or server-side storage.
 - Structured resume data for config-driven demos.
-- Personal demo routes kept separate from the product experience.
+- Fictional demo routes kept separate from the product experience.
+- Local photo upload with JPG, PNG and WEBP support.
+- Typography scale and density controls for better A4 fitting.
 - Ready for Vercel deployment.
 
 ## Routes
 
 - `/`: ResumeCraft product home.
 - `/builder`: editable MVP builder.
-- `/cv/base`: personal demo based on the original general CV.
-- `/cv/edteam`: personal demo adapted for EDteam.
-- `/cv/walmart`: personal demo adapted for Walmart.
+- `/cv/base`: fictional general demo.
+- `/cv/edteam`: fictional technology demo.
+- `/cv/walmart`: fictional corporate operations demo.
 
 ## Run locally
 
@@ -58,14 +60,14 @@ The MVP supports:
 - languages
 - projects
 - optional photo URL or local public asset path
+- photo upload from the user's device
+- template selection
+- typography scale: compact, normal and wide
+- density: compact, normal and airy
 
-The builder stores data in the browser under `resumecraft.builder.v1`. It does not send personal data to a backend.
+Experience, education and projects can be added, removed and reordered directly in the builder. Skills, tools, focus areas and languages can also be added or deleted from the UI.
 
-The multiline fields use one item per line. Complex sections use `|` as a separator:
-
-```text
-Frontend Developer | Northstar Studio | 2024 - Present | Built reusable React components.
-```
+The builder stores data in the browser under `resumecraft.builder.v2`. It does not send personal data to a backend.
 
 ## Export PDF
 
@@ -91,7 +93,7 @@ data/resume.ts
 
 The builder example is exported as `exampleResumeData`.
 
-Personal demos are stored in:
+Fictional demos are stored in:
 
 ```text
 data/profile.ts
@@ -107,7 +109,7 @@ To add another config-driven demo:
 
 ## Create a new template
 
-The current template is implemented with:
+The current templates are implemented with:
 
 ```text
 components/Resume.tsx
@@ -122,13 +124,13 @@ To add a new template:
 2. Create a new template component that accepts `ResumeData`.
 3. Add template-specific screen styles to `app/globals.css`.
 4. Add print rules to `styles/print.css`.
-5. Route the builder through a template selector when multiple templates exist.
+5. Add it to the `ResumeTemplate` union and the builder selector.
 
 ## Privacy
 
 ResumeCraft is designed to run without accounts or backend storage. Builder data is saved locally in the user's browser. Do not commit private personal information, credentials or secrets into public demo data.
 
-The included Carlos CV routes are demos and are intentionally separated from the main product home and builder.
+The included CV routes are fictional demos and are intentionally separated from the main product home and builder.
 
 ## Roadmap
 
@@ -138,7 +140,7 @@ The included Carlos CV routes are demos and are intentionally separated from the
 - LinkedIn and GitHub import.
 - Version history.
 - Richer section editor for repeated entries.
-- Template selector in the builder.
+- PDF preview calibration per template.
 
 ## Deploy on Vercel
 
