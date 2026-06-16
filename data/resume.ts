@@ -31,16 +31,24 @@ export type ResumeContact = {
   github: string;
 };
 
-export type ResumeTemplate = "modern-sidebar" | "professional-corporate" | "minimal-clean";
+export type ResumeTemplate =
+  | "modern-sidebar"
+  | "professional-corporate"
+  | "minimal-clean"
+  | "creative-tech"
+  | "ats-clean";
 
 export type TypeScale = "compact" | "normal" | "wide";
 
 export type ResumeDensity = "compact" | "normal" | "airy";
 
+export type FontSize = "small" | "normal" | "large";
+
 export type BuilderSettings = {
   template: ResumeTemplate;
   typeScale: TypeScale;
   density: ResumeDensity;
+  fontSize: FontSize;
 };
 
 export type ResumeData = {
@@ -162,4 +170,5 @@ export const defaultBuilderSettings: BuilderSettings = {
   template: "modern-sidebar",
   typeScale: "normal",
   density: "normal",
+  fontSize: "normal",
 };

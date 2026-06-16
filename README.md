@@ -7,7 +7,7 @@ It keeps the strongest parts of the original prototype as a reusable product: st
 ## Features
 
 - Editable resume builder at `/builder`.
-- Three selectable templates: Modern Sidebar, Professional Corporate and Minimal Clean.
+- Five selectable templates: Modern Sidebar, Professional Corporate, Minimal Clean, Creative Tech and ATS Clean.
 - Real-time preview while editing.
 - PDF export through the browser print dialog.
 - Local browser storage with `localStorage`.
@@ -62,7 +62,8 @@ The MVP supports:
 - optional photo URL or local public asset path
 - photo upload from the user's device
 - template selection
-- typography scale: compact, normal and wide
+- auto fit visual: compact, normal and wide
+- manual font size: small, normal and large
 - density: compact, normal and airy
 
 Experience, education and projects can be added, removed and reordered directly in the builder. Skills, tools, focus areas and languages can also be added or deleted from the UI.
@@ -125,6 +126,14 @@ To add a new template:
 3. Add template-specific screen styles to `app/globals.css`.
 4. Add print rules to `styles/print.css`.
 5. Add it to the `ResumeTemplate` union and the builder selector.
+
+## Template guide
+
+- Modern Sidebar: general modern resumes with a strong visual sidebar.
+- Professional Corporate: traditional companies, administration, retail operations and finance.
+- Minimal Clean: technology profiles that need a clean, readable presentation.
+- Creative Tech: product, AI, portfolio and creative technology roles.
+- ATS Clean: job portals, applicant tracking systems and recruiter-first readability.
 
 ## Privacy
 

@@ -79,7 +79,7 @@ export default function Home() {
         <Feature
           icon={Sparkles}
           title="Extensible"
-          text="Incluye una plantilla moderna con columna lateral y una base lista para más plantillas."
+          text="Incluye cinco plantillas listas para distintos perfiles, desde ATS limpio hasta portafolio tech."
         />
       </section>
 

@@ -244,22 +244,22 @@
   }
 
   .entry h3 {
-    font-size: 8.3pt !important;
+    font-size: calc(8.3pt + var(--font-delta, 0pt)) !important;
     line-height: 1.12 !important;
   }
 
   .entry .org {
-    font-size: 7.5pt !important;
+    font-size: calc(7.5pt + var(--font-delta, 0pt)) !important;
     line-height: 1.12 !important;
   }
 
   .entry time {
-    font-size: 7pt !important;
+    font-size: calc(7pt + var(--font-delta, 0pt)) !important;
     margin-left: 6pt !important;
   }
 
   .entry p {
-    font-size: 7.4pt !important;
+    font-size: calc(7.4pt + var(--font-delta, 0pt)) !important;
     line-height: 1.22 !important;
     margin-top: 1pt !important;
   }
@@ -274,13 +274,13 @@
   }
 
   .project h3 {
-    font-size: 7.9pt !important;
+    font-size: calc(7.9pt + var(--font-delta, 0pt)) !important;
     line-height: 1.08 !important;
     margin-bottom: 2pt !important;
   }
 
   .project p {
-    font-size: 7.1pt !important;
+    font-size: calc(7.1pt + var(--font-delta, 0pt)) !important;
     line-height: 1.18 !important;
   }
 
@@ -421,7 +421,7 @@
   }
 
   .resume-scale-compact {
-    --scale-body: 0.9;
+    --scale-body: 0.88;
     --scale-leading: 1.16;
   }
 
@@ -431,8 +431,8 @@
   }
 
   .resume-scale-wide {
-    --scale-body: 1.08;
-    --scale-leading: 1.34;
+    --scale-body: 1.12;
+    --scale-leading: 1.38;
   }
 
   .resume-density-compact {
@@ -446,19 +446,50 @@
   }
 
   .resume-density-airy {
-    --density-gap: 1.18;
-    --density-pad: 1.12;
+    --density-gap: 1.32;
+    --density-pad: 1.18;
+  }
+
+  .resume-font-small {
+    --font-delta: -0.45pt;
+  }
+
+  .resume-font-normal {
+    --font-delta: 0pt;
+  }
+
+  .resume-font-large {
+    --font-delta: 0.55pt;
   }
 
   .resume-template-professional-corporate,
-  .resume-template-minimal-clean {
+  .resume-template-minimal-clean,
+  .resume-template-creative-tech,
+  .resume-template-ats-clean {
     display: block !important;
     height: 297mm !important;
     width: 210mm !important;
   }
 
+  .resume-template-modern-sidebar.resume-scale-wide .sidebar {
+    padding-bottom: 8mm !important;
+    padding-top: 9mm !important;
+  }
+
+  .resume-template-modern-sidebar.resume-scale-wide .main {
+    padding-bottom: 8mm !important;
+    padding-top: 8.5mm !important;
+  }
+
+  .resume-template-modern-sidebar.resume-density-airy .side-section {
+    margin-bottom: 3.5mm !important;
+    padding-bottom: 3.5mm !important;
+  }
+
   .corporate-header,
-  .minimal-header {
+  .minimal-header,
+  .creative-header,
+  .ats-header {
     border-bottom: 1px solid var(--line) !important;
     display: grid !important;
     gap: 4pt !important;
@@ -466,16 +497,20 @@
   }
 
   .corporate-header h1,
-  .minimal-header h1 {
-    font-size: calc(18pt * var(--scale-body, 1)) !important;
+  .minimal-header h1,
+  .creative-header h1,
+  .ats-header h1 {
+    font-size: calc((18pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
     line-height: 0.95 !important;
     margin: 0 0 2pt !important;
   }
 
   .corporate-header p,
   .minimal-header p,
+  .creative-header p,
+  .ats-header p,
   .contact-bar li {
-    font-size: calc(7.2pt * var(--scale-body, 1)) !important;
+    font-size: calc((7.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
     line-height: var(--scale-leading, 1.2) !important;
   }
 
@@ -515,8 +550,45 @@
     padding-right: 10mm !important;
   }
 
-  .minimal-main {
+  .minimal-main,
+  .creative-main,
+  .ats-main {
     gap: calc(2.8mm * var(--density-gap, 1)) !important;
+  }
+
+  .creative-header {
+    background: linear-gradient(135deg, #0f172a 0%, #164e63 55%, #0f766e 100%) !important;
+    color: #ffffff !important;
+  }
+
+  .creative-header .kicker,
+  .creative-header p {
+    color: #d8f3ee !important;
+  }
+
+  .creative-strip {
+    background: #ecfeff !important;
+    border-bottom: 1px solid #bae6fd !important;
+    padding: 3mm 9mm !important;
+  }
+
+  .creative-main,
+  .ats-main {
+    padding: 4.5mm 9mm 6mm !important;
+  }
+
+  .creative-highlight {
+    border-radius: 5pt !important;
+    padding: 5pt !important;
+  }
+
+  .creative-highlight h2 {
+    font-size: calc((7.7pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
+    margin-bottom: 4pt !important;
+  }
+
+  .ats-header {
+    border-bottom-color: #111827 !important;
   }
 
   .resume-lists {
@@ -524,7 +596,7 @@
   }
 
   .list-block h2 {
-    font-size: calc(7.7pt * var(--scale-body, 1)) !important;
+    font-size: calc((7.7pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
     margin-bottom: 4pt !important;
   }
 
@@ -533,12 +605,12 @@
   }
 
   .list-block li {
-    font-size: calc(6.8pt * var(--scale-body, 1)) !important;
+    font-size: calc((6.8pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
     line-height: var(--scale-leading, 1.16) !important;
   }
 
   .resume .summary {
-    font-size: calc(8.2pt * var(--scale-body, 1)) !important;
+    font-size: calc((8.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt)) !important;
     line-height: var(--scale-leading, 1.28) !important;
   }
 

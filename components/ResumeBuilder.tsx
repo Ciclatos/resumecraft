@@ -16,6 +16,7 @@ import {
   defaultBuilderSettings,
   exampleResumeData,
   type BuilderSettings,
+  type FontSize,
   type ResumeData,
   type ResumeDensity,
   type ResumeEducation,
@@ -57,21 +58,37 @@ const templateOptions: Array<{
   id: ResumeTemplate;
   name: string;
   description: string;
+  bestFor: string;
 }> = [
   {
     id: "modern-sidebar",
     name: "Modern Sidebar",
-    description: "Visual, compacta y con columna lateral.",
+    description: "General moderno con identidad visual fuerte.",
+    bestFor: "general moderno",
   },
   {
     id: "professional-corporate",
     name: "Professional Corporate",
-    description: "Tradicional, sobria y fuerte para operaciones.",
+    description: "Tradicional, sobria y fuerte para empresas grandes.",
+    bestFor: "empresas tradicionales",
   },
   {
     id: "minimal-clean",
     name: "Minimal Clean",
-    description: "Limpia, técnica y con más espacio en blanco.",
+    description: "Limpia, técnica y con lectura muy cómoda.",
+    bestFor: "tecnología / limpio",
+  },
+  {
+    id: "creative-tech",
+    name: "Creative Tech",
+    description: "Moderna, visual y orientada a producto o portafolio.",
+    bestFor: "portafolio / tech creativo",
+  },
+  {
+    id: "ats-clean",
+    name: "ATS Clean",
+    description: "Lineal, simple y optimizada para lectura automática.",
+    bestFor: "portales de empleo / ATS",
   },
 ];
 
@@ -85,6 +102,12 @@ const densityOptions: Array<{ id: ResumeDensity; label: string }> = [
   { id: "compact", label: "Compacta" },
   { id: "normal", label: "Normal" },
   { id: "airy", label: "Aireada" },
+];
+
+const fontSizeOptions: Array<{ id: FontSize; label: string }> = [
+  { id: "small", label: "Pequeño" },
+  { id: "normal", label: "Normal" },
+  { id: "large", label: "Grande" },
 ];
 
 export function ResumeBuilder() {
@@ -103,7 +126,7 @@ export function ResumeBuilder() {
           settings?: BuilderSettings;
         };
         setResume(parsed.resume ?? exampleResumeData);
-        setSettings(parsed.settings ?? defaultBuilderSettings);
+        setSettings({ ...defaultBuilderSettings, ...parsed.settings });
       } catch {
         setResume(exampleResumeData);
         setSettings(defaultBuilderSettings);
@@ -206,10 +229,17 @@ export function ResumeBuilder() {
           />
 
           <SegmentedControl
-            label="Escala tipográfica"
+            label="Auto fit visual"
             value={settings.typeScale}
             options={scaleOptions}
             onChange={(typeScale) => updateSettings({ typeScale })}
+          />
+
+          <SegmentedControl
+            label="Tamaño de letra"
+            value={settings.fontSize}
+            options={fontSizeOptions}
+            onChange={(fontSize) => updateSettings({ fontSize })}
           />
 
           <SegmentedControl
@@ -353,6 +383,7 @@ export function ResumeBuilder() {
             template={settings.template}
             typeScale={settings.typeScale}
             density={settings.density}
+            fontSize={settings.fontSize}
             showDemoLinks={false}
             showQr={Boolean(resume.contact.portfolio)}
             actions={
@@ -399,6 +430,7 @@ function TemplateSelector({
             </span>
             <strong>{template.name}</strong>
             <small>{template.description}</small>
+            <span>{template.bestFor}</span>
           </button>
         ))}
       </div>

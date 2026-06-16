@@ -4,7 +4,13 @@ import type { LucideIcon } from "lucide-react";
 import { Section } from "./Section";
 import { Sidebar } from "./Sidebar";
 import { PrintButton } from "./PrintButton";
-import type { ResumeData, ResumeDensity, ResumeTemplate, TypeScale } from "../data/resume";
+import type {
+  FontSize,
+  ResumeData,
+  ResumeDensity,
+  ResumeTemplate,
+  TypeScale,
+} from "../data/resume";
 
 type ResumeProps = {
   data: ResumeData;
@@ -13,6 +19,7 @@ type ResumeProps = {
   template?: ResumeTemplate;
   typeScale?: TypeScale;
   density?: ResumeDensity;
+  fontSize?: FontSize;
   showDemoLinks?: boolean;
   showQr?: boolean;
   actions?: React.ReactNode;
@@ -46,6 +53,7 @@ export function Resume({
   template = "modern-sidebar",
   typeScale = "normal",
   density = "normal",
+  fontSize = "normal",
   showDemoLinks = true,
   showQr = false,
   actions,
@@ -57,6 +65,7 @@ export function Resume({
     `resume-template-${template}`,
     `resume-scale-${typeScale}`,
     `resume-density-${density}`,
+    `resume-font-${fontSize}`,
     `print-${printMode}`,
   ].join(" ");
 
@@ -94,8 +103,24 @@ export function Resume({
           label={label}
           summaryIcon={SummaryIcon}
         />
-      ) : (
+      ) : template === "minimal-clean" ? (
         <MinimalCleanResume
+          className={resumeClass}
+          data={data}
+          icons={icons}
+          label={label}
+          summaryIcon={SummaryIcon}
+        />
+      ) : template === "creative-tech" ? (
+        <CreativeTechResume
+          className={resumeClass}
+          data={data}
+          icons={icons}
+          label={label}
+          summaryIcon={SummaryIcon}
+        />
+      ) : (
+        <ATSCleanResume
           className={resumeClass}
           data={data}
           icons={icons}
@@ -193,6 +218,67 @@ function MinimalCleanResume({
       </header>
       <div className="minimal-main">
         <ResumeIntro data={data} label="Profile" SummaryIcon={SummaryIcon} />
+        <CoreSections data={data} icons={icons} />
+        <ResumeSidebarLists data={data} />
+      </div>
+    </article>
+  );
+}
+
+function CreativeTechResume({
+  className,
+  data,
+  icons,
+  label,
+  summaryIcon: SummaryIcon,
+}: TemplateProps) {
+  return (
+    <article className={className}>
+      <header className="creative-header">
+        <div>
+          <p className="kicker">{label}</p>
+          <h1>{data.name}</h1>
+          <p>{data.headline}</p>
+        </div>
+        <HeaderPhoto data={data} />
+      </header>
+      <div className="creative-strip">
+        <ContactBar data={data} />
+      </div>
+      <div className="creative-main">
+        <ResumeIntro data={data} label="Profile" SummaryIcon={SummaryIcon} />
+        <section className="creative-highlight">
+          <h2>Core strengths</h2>
+          <div className="focus-list" aria-label="Enfoques principales">
+            {data.focus.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+        </section>
+        <CoreSections data={data} icons={icons} />
+        <ResumeSidebarLists data={data} />
+      </div>
+    </article>
+  );
+}
+
+function ATSCleanResume({
+  className,
+  data,
+  icons,
+  label,
+  summaryIcon: SummaryIcon,
+}: TemplateProps) {
+  return (
+    <article className={className}>
+      <header className="ats-header">
+        <p className="kicker">{label}</p>
+        <h1>{data.name}</h1>
+        <p>{data.headline}</p>
+        <ContactBar data={data} />
+      </header>
+      <div className="ats-main">
+        <ResumeIntro data={data} label="Professional summary" SummaryIcon={SummaryIcon} />
         <CoreSections data={data} icons={icons} />
         <ResumeSidebarLists data={data} />
       </div>
