@@ -1,0 +1,46 @@
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    height: auto;
+    width: 210mm;
+  }
+
+  .screen-shell {
+    padding: 0 !important;
+  }
+
+  .toolbar {
+    display: none !important;
+  }
+
+  .resume {
+    box-shadow: none !important;
+    margin: 0 !important;
+    max-width: none !important;
+    min-height: 297mm;
+    width: 210mm;
+  }
+
+  .sidebar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .section,
+  .entry,
+  .project,
+  .side-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
