@@ -3,7 +3,7 @@ export const profile = {
   photo: "/foto.png",
   email: "carloseduardo151211@gmail.com",
   phone: "+502 5683-8132",
-  location: "Guatemala",
+  location: "Guatemala, Amatitlán",
   linkedIn: "https://www.linkedin.com/in/carlos-diaz-00a014303/",
   github: "https://github.com/Ciclatos",
   portfolio: "https://carlos-diaz-portfolio.vercel.app",

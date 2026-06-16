@@ -247,14 +247,14 @@ export const variants: Record<string, ResumeVariant> = {
     sections: {
       experience: [
         {
-          ...baseExperience[1],
-          description:
-            "Atención a clientes, resolución de solicitudes, documentación de casos y seguimiento de incidencias con orden y calidad.",
-        },
-        {
           ...baseExperience[0],
           description:
             "Planificación de entregables, organización de archivos, coordinación con equipos y cumplimiento de procesos.",
+        },
+        {
+          ...baseExperience[1],
+          description:
+            "Atención a clientes, resolución de solicitudes, documentación de casos y seguimiento de incidencias con orden y calidad.",
         },
         {
           ...baseExperience[2],
