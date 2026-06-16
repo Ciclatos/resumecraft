@@ -1,94 +1,157 @@
-# Carlos CV Builder
+# ResumeCraft
 
-Proyecto web para generar versiones profesionales, editables y exportables a PDF del CV de Carlos Díaz.
+ResumeCraft is an open source CV builder for creating professional, editable resumes and exporting them to PDF directly from the browser.
 
-## Rutas disponibles
+It started as a personal CV generator and now keeps that original layout as a reusable product: structured resume data, a modern sidebar template, browser printing styles, demo variants and a simple editable MVP.
 
-- `/cv/base`: CV general para oportunidades de tecnología, IA, automatización, desarrollo web y contenidos digitales.
-- `/cv/edteam`: CV adaptado a Asistente de Contenidos en EDteam.
-- `/cv/walmart`: CV adaptado a Programador de Pedidos en Walmart.
+## Features
 
-## Correr el proyecto
+- Editable resume builder at `/builder`.
+- Modern CV template with a sidebar layout.
+- Real-time preview while editing.
+- PDF export through the browser print dialog.
+- Local browser storage with `localStorage`.
+- No login, backend or server-side storage.
+- Structured resume data for config-driven demos.
+- Personal demo routes kept separate from the product experience.
+- Ready for Vercel deployment.
+
+## Routes
+
+- `/`: ResumeCraft product home.
+- `/builder`: editable MVP builder.
+- `/cv/base`: personal demo based on the original general CV.
+- `/cv/edteam`: personal demo adapted for EDteam.
+- `/cv/walmart`: personal demo adapted for Walmart.
+
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abre `http://localhost:3000/cv/base`.
+Open `http://localhost:3000`.
 
-## Editar datos base
+To create a production build:
 
-La información general vive en:
+```bash
+npm run build
+npm run start
+```
+
+## Use the builder
+
+Go to `/builder`, edit the fields in the left panel and preview the resume on the right.
+
+The MVP supports:
+
+- name
+- headline
+- contact
+- location
+- summary
+- experience
+- education
+- skills
+- tools
+- languages
+- projects
+- optional photo URL or local public asset path
+
+The builder stores data in the browser under `resumecraft.builder.v1`. It does not send personal data to a backend.
+
+The multiline fields use one item per line. Complex sections use `|` as a separator:
+
+```text
+Frontend Developer | Northstar Studio | 2024 - Present | Built reusable React components.
+```
+
+## Export PDF
+
+Every CV includes a `Descargar PDF` button. It opens the browser print dialog.
+
+Recommended settings:
+
+- Destination: Save as PDF.
+- Paper size: A4.
+- Scale: 90% to 95% if the browser creates an extra page.
+- Margins: None.
+- Background graphics: enabled.
+
+The PDF layout is controlled by `styles/print.css`, which keeps the resume close to a one-page A4 document.
+
+## Create sample data
+
+Reusable sample data lives in:
+
+```text
+data/resume.ts
+```
+
+The builder example is exported as `exampleResumeData`.
+
+Personal demos are stored in:
 
 ```text
 data/profile.ts
-```
-
-Ahí puedes actualizar nombre, contacto, enlaces, fotografía, formación e idiomas.
-
-## Crear o editar variantes
-
-Las variantes viven en:
-
-```text
 data/variants.ts
 ```
 
-Para crear una nueva variante:
+To add another config-driven demo:
 
-1. Duplica una entrada dentro del objeto `variants`.
-2. Cambia el `slug`, `name`, `headline`, `summary`, `focus`, habilidades, herramientas, experiencia y proyectos.
-3. Activa o desactiva el QR con `showQr: true` o `showQr: false`.
-4. Entra a `/cv/nuevo-slug`.
+1. Add a new entry to `variants` in `data/variants.ts`.
+2. Set a unique `slug`.
+3. Fill `variantLabel`, `headline`, `summary`, `focus`, sections and icons.
+4. Visit `/cv/your-slug`.
 
-## Exportar PDF
+## Create a new template
 
-Cada CV tiene un botón `Descargar PDF`. El botón abre el diálogo de impresión del navegador.
+The current template is implemented with:
 
-Configuración recomendada para el resultado más fiel:
+```text
+components/Resume.tsx
+components/Sidebar.tsx
+components/Section.tsx
+styles/print.css
+```
 
-- Destino: `Guardar como PDF`.
-- Tamaño de papel: `A4`.
-- Escala: `90%` a `95%` si el navegador muestra un salto de página.
-- Márgenes: `Ninguno`.
-- Activar `Gráficos de fondo` para conservar la columna lateral, fondos e íconos.
+To add a new template:
 
-También puedes usar `Cmd + P` en macOS o `Ctrl + P` en Windows/Linux.
+1. Keep using the `ResumeData` type from `data/resume.ts`.
+2. Create a new template component that accepts `ResumeData`.
+3. Add template-specific screen styles to `app/globals.css`.
+4. Add print rules to `styles/print.css`.
+5. Route the builder through a template selector when multiple templates exist.
 
-Notas por variante:
+## Privacy
 
-- `/cv/walmart` está optimizada para una sola página en PDF.
-- `/cv/edteam` usa una versión compacta en impresión y oculta contenido secundario.
-- `/cv/base` intenta mantenerse en una página; conserva más proyectos que las variantes específicas.
+ResumeCraft is designed to run without accounts or backend storage. Builder data is saved locally in the user's browser. Do not commit private personal information, credentials or secrets into public demo data.
 
-La vista web puede mostrar más contenido que el PDF. En impresión, `styles/print.css` aplica una hoja A4 exacta, tipografías en puntos y reglas de compactación por variante para priorizar legibilidad.
+The included Carlos CV routes are demos and are intentionally separated from the main product home and builder.
 
-## Desplegar en Vercel
+## Roadmap
 
-1. Sube el repositorio a GitHub.
-2. En Vercel, importa el repositorio.
-3. Usa la configuración automática de Next.js.
-4. Ejecuta el despliegue.
+- More templates.
+- AI-assisted CV adaptation for job posts.
+- ATS-friendly mode.
+- LinkedIn and GitHub import.
+- Version history.
+- Richer section editor for repeated entries.
+- Template selector in the builder.
 
-Comandos útiles:
+## Deploy on Vercel
+
+1. Push the repository to GitHub.
+2. Import the repository in Vercel.
+3. Use the default Next.js settings.
+4. Deploy.
 
 ```bash
 npm run build
 vercel --prod
 ```
 
-## Estructura principal
+## License
 
-```text
-app/cv/[variant]/page.tsx
-components/Resume.tsx
-components/Sidebar.tsx
-components/Section.tsx
-components/QRCode.tsx
-styles/print.css
-data/profile.ts
-data/variants.ts
-```
-
-El diseño usa HTML real, texto seleccionable, estilos responsive y reglas `@media print` para exportación limpia a PDF.
+Add a license before publishing broadly as an open source project.

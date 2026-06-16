@@ -3,8 +3,9 @@ import "./globals.css";
 import "../styles/print.css";
 
 export const metadata: Metadata = {
-  title: "Carlos CV Builder",
-  description: "CVs profesionales de Carlos Díaz, editables y exportables a PDF.",
+  title: "ResumeCraft",
+  description:
+    "Herramienta open source para crear CVs profesionales, editables y exportables a PDF desde el navegador.",
 };
 
 export default function RootLayout({

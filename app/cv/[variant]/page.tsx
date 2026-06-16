@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
-    title: `${data.name} | Carlos Díaz`,
+    title: `${data.variantLabel} | ResumeCraft Demo`,
     description: data.metaDescription,
   };
 }
@@ -34,5 +34,13 @@ export default async function CvVariantPage({ params }: PageProps) {
     notFound();
   }
 
-  return <Resume variant={data} />;
+  return (
+    <Resume
+      data={data}
+      label={`Demo personal: ${data.variantLabel}`}
+      printMode={data.printMode}
+      showQr={data.showQr}
+      icons={data.icons}
+    />
+  );
 }

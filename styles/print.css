@@ -30,6 +30,22 @@
     display: none !important;
   }
 
+  .home-nav,
+  .builder-header,
+  .builder-panel {
+    display: none !important;
+  }
+
+  .builder-page,
+  .builder-workspace,
+  .builder-preview {
+    background: #ffffff !important;
+    display: block !important;
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
   .resume {
     background: #ffffff !important;
     box-shadow: none !important;

@@ -10,61 +10,81 @@ import {
   User,
   Wrench,
 } from "lucide-react";
-import { profile } from "../data/profile";
-import type { ResumeVariant } from "../data/variants";
+import type { ResumeData } from "../data/resume";
 import { QRCode } from "./QRCode";
 
 type SidebarProps = {
-  variant: ResumeVariant;
+  data: ResumeData;
+  showQr?: boolean;
 };
 
-export function Sidebar({ variant }: SidebarProps) {
+export function Sidebar({ data, showQr = false }: SidebarProps) {
+  const photo = data.photo?.trim();
+  const contact = data.contact;
+  const portfolioLabel = contact.portfolio.replace(/^https?:\/\//, "");
+  const linkedInLabel = contact.linkedIn.replace(/^https?:\/\/(www\.)?/, "");
+  const githubLabel = contact.github.replace(/^https?:\/\/(www\.)?/, "");
+
   return (
     <aside className="sidebar">
-      <div className="portrait">
-        <img
-          src={profile.photo}
-          alt="Foto profesional de Carlos Díaz"
-        />
-      </div>
+      {photo ? (
+        <div className="portrait">
+          <img src={photo} alt={`Foto profesional de ${data.name}`} />
+        </div>
+      ) : (
+        <div className="portrait portrait-fallback" aria-hidden="true">
+          {data.name
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0])
+            .join("")}
+        </div>
+      )}
 
       <div className="identity">
-        <h1>{profile.name}</h1>
-        <p>{variant.headline}</p>
+        <h1>{data.name}</h1>
+        <p>{data.headline}</p>
       </div>
 
       <SideSection title="Contacto" icon={User}>
         <ul className="contact-list">
           <li>
             <Mail size={14} aria-hidden="true" />
-            <a href={`mailto:${profile.email}`}>{profile.email}</a>
+            <a href={`mailto:${contact.email}`}>{contact.email}</a>
           </li>
           <li>
             <Phone size={14} aria-hidden="true" />
-            <a href={`tel:${profile.phone.replace(/\s/g, "")}`}>{profile.phone}</a>
+            <a href={`tel:${contact.phone.replace(/\s/g, "")}`}>{contact.phone}</a>
           </li>
           <li>
             <MapPin size={14} aria-hidden="true" />
-            <span>{profile.location}</span>
+            <span>{contact.location}</span>
           </li>
-          <li>
-            <Globe size={14} aria-hidden="true" />
-            <a href={profile.portfolio}>{profile.portfolio.replace("https://", "")}</a>
-          </li>
-          <li>
-            <Linkedin size={14} aria-hidden="true" />
-            <a href={profile.linkedIn}>linkedin.com/in/carlos-diaz-00a014303/</a>
-          </li>
-          <li>
-            <Github size={14} aria-hidden="true" />
-            <a href={profile.github}>github.com/Ciclatos</a>
-          </li>
+          {contact.portfolio ? (
+            <li>
+              <Globe size={14} aria-hidden="true" />
+              <a href={contact.portfolio}>{portfolioLabel}</a>
+            </li>
+          ) : null}
+          {contact.linkedIn ? (
+            <li>
+              <Linkedin size={14} aria-hidden="true" />
+              <a href={contact.linkedIn}>{linkedInLabel}</a>
+            </li>
+          ) : null}
+          {contact.github ? (
+            <li>
+              <Github size={14} aria-hidden="true" />
+              <a href={contact.github}>{githubLabel}</a>
+            </li>
+          ) : null}
         </ul>
       </SideSection>
 
       <SideSection title="Habilidades" icon={Sparkles}>
         <ul className="simple-list">
-          {variant.sections.skills.map((skill) => (
+          {data.sections.skills.map((skill) => (
             <li key={skill}>{skill}</li>
           ))}
         </ul>
@@ -72,7 +92,7 @@ export function Sidebar({ variant }: SidebarProps) {
 
       <SideSection title="Herramientas" icon={Wrench}>
         <ul className="simple-list tool-list">
-          {variant.sections.tools.map((tool) => (
+          {data.sections.tools.map((tool) => (
             <li key={tool}>{tool}</li>
           ))}
         </ul>
@@ -80,7 +100,7 @@ export function Sidebar({ variant }: SidebarProps) {
 
       <SideSection title="Idiomas" icon={Languages}>
         <ul className="language-list">
-          {profile.languages.map((language) => (
+          {data.sections.languages.map((language) => (
             <li key={language.name}>
               <strong>{language.name}</strong>
               {language.level}
@@ -89,9 +109,9 @@ export function Sidebar({ variant }: SidebarProps) {
         </ul>
       </SideSection>
 
-      {variant.showQr ? (
+      {showQr && contact.portfolio ? (
         <SideSection title="Portafolio" icon={Globe}>
-          <QRCode value={profile.portfolio} />
+          <QRCode value={contact.portfolio} />
         </SideSection>
       ) : null}
     </aside>

@@ -9,37 +9,16 @@ import {
   Workflow,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { profile } from "./profile";
+import { demoProfileData, profile } from "./profile";
+import type { ResumeData, ResumeEntry, ResumeProject } from "./resume";
 
-export type ResumeEntry = {
-  title: string;
-  organization: string;
-  period: string;
-  description: string;
-};
-
-export type ResumeProject = {
-  name: string;
-  description: string;
-};
-
-export type ResumeVariant = {
+export type ResumeVariant = ResumeData & {
   slug: string;
+  variantLabel: string;
   name: string;
   printMode: "balanced" | "compact" | "dense";
   metaDescription: string;
-  headline: string;
-  summary: string;
-  focus: string[];
   showQr: boolean;
-  sections: {
-    experience: ResumeEntry[];
-    projects: ResumeProject[];
-    education: typeof profile.education;
-    skills: string[];
-    tools: string[];
-    additional?: string;
-  };
   icons: {
     summary: LucideIcon;
     experience: LucideIcon;
@@ -105,7 +84,10 @@ const projects: ResumeProject[] = [
 export const variants: Record<string, ResumeVariant> = {
   base: {
     slug: "base",
-    name: "CV General",
+    variantLabel: "CV General",
+    name: profile.name,
+    photo: demoProfileData.photo,
+    contact: demoProfileData.contact,
     printMode: "balanced",
     metaDescription:
       "Perfil general de Carlos Díaz en tecnología, IA, automatización, desarrollo web y contenidos digitales.",
@@ -125,6 +107,7 @@ export const variants: Record<string, ResumeVariant> = {
       experience: baseExperience,
       projects,
       education: profile.education,
+      languages: demoProfileData.languages,
       skills: [
         "Automatización de procesos",
         "Desarrollo web con React",
@@ -157,7 +140,10 @@ export const variants: Record<string, ResumeVariant> = {
   },
   edteam: {
     slug: "edteam",
-    name: "CV EDteam",
+    variantLabel: "CV EDteam",
+    name: profile.name,
+    photo: demoProfileData.photo,
+    contact: demoProfileData.contact,
     printMode: "compact",
     metaDescription:
       "CV de Carlos Díaz adaptado a Asistente de Contenidos en EDteam.",
@@ -195,6 +181,7 @@ export const variants: Record<string, ResumeVariant> = {
       ],
       projects,
       education: profile.education,
+      languages: demoProfileData.languages,
       skills: [
         "Investigación y curación de información",
         "Síntesis de temas técnicos",
@@ -227,7 +214,10 @@ export const variants: Record<string, ResumeVariant> = {
   },
   walmart: {
     slug: "walmart",
-    name: "CV Walmart",
+    variantLabel: "CV Walmart",
+    name: profile.name,
+    photo: demoProfileData.photo,
+    contact: demoProfileData.contact,
     printMode: "dense",
     metaDescription:
       "CV de Carlos Díaz adaptado a Programador de Pedidos en Walmart.",
@@ -286,6 +276,7 @@ export const variants: Record<string, ResumeVariant> = {
         },
       ],
       education: profile.education,
+      languages: demoProfileData.languages,
       skills: [
         "Análisis de datos",
         "Excel intermedio",

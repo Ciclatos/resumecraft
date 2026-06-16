@@ -1,31 +1,64 @@
 import Link from "next/link";
+import { Bot, BriefcaseBusiness, Code2, GraduationCap } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Section } from "./Section";
 import { Sidebar } from "./Sidebar";
 import { PrintButton } from "./PrintButton";
-import type { ResumeVariant } from "../data/variants";
+import type { ResumeData } from "../data/resume";
 
 type ResumeProps = {
-  variant: ResumeVariant;
+  data: ResumeData;
+  label?: string;
+  printMode?: "balanced" | "compact" | "dense";
+  showDemoLinks?: boolean;
+  showQr?: boolean;
+  actions?: React.ReactNode;
+  icons?: {
+    summary: LucideIcon;
+    experience: LucideIcon;
+    projects: LucideIcon;
+    education: LucideIcon;
+  };
 };
 
 const variantLinks = [
-  { href: "/cv/base", label: "Base" },
-  { href: "/cv/edteam", label: "EDteam" },
-  { href: "/cv/walmart", label: "Walmart" },
+  { href: "/", label: "ResumeCraft" },
+  { href: "/builder", label: "Crear CV" },
+  { href: "/cv/base", label: "Demo base" },
+  { href: "/cv/edteam", label: "Demo EDteam" },
+  { href: "/cv/walmart", label: "Demo Walmart" },
 ];
 
-export function Resume({ variant }: ResumeProps) {
-  const SummaryIcon = variant.icons.summary;
-  const resumeClass = `resume resume-${variant.slug} print-${variant.printMode}`;
+const defaultIcons = {
+  summary: Bot,
+  experience: BriefcaseBusiness,
+  projects: Code2,
+  education: GraduationCap,
+};
+
+export function Resume({
+  data,
+  label = "ResumeCraft CV",
+  printMode = "balanced",
+  showDemoLinks = true,
+  showQr = false,
+  actions,
+  icons = defaultIcons,
+}: ResumeProps) {
+  const SummaryIcon = icons.summary;
+  const resumeClass = `resume print-${printMode}`;
 
   return (
     <main className="screen-shell">
       <nav className="toolbar" aria-label="Variantes del CV">
-        {variantLinks.map((link) => (
-          <Link key={link.href} href={link.href}>
-            {link.label}
-          </Link>
-        ))}
+        {showDemoLinks
+          ? variantLinks.map((link) => (
+              <Link key={link.href} href={link.href}>
+                {link.label}
+              </Link>
+            ))
+          : null}
+        {actions}
         <PrintButton />
         <p className="print-tip">
           PDF: A4, escala 90-95%, márgenes ninguno, gráficos de fondo activados.
@@ -33,33 +66,33 @@ export function Resume({ variant }: ResumeProps) {
       </nav>
 
       <article className={resumeClass}>
-        <Sidebar variant={variant} />
+        <Sidebar data={data} showQr={showQr} />
         <div className="main">
           <header className="topline">
-            <p className="kicker">{variant.name}</p>
+            <p className="kicker">{label}</p>
             <div className="section-title">
               <span className="icon-badge" aria-hidden="true">
                 <SummaryIcon size={15} strokeWidth={2.3} />
               </span>
               <h2>Perfil profesional</h2>
             </div>
-            <p className="summary">{variant.summary}</p>
+            <p className="summary">{data.summary}</p>
             <div className="focus-list" aria-label="Enfoques principales">
-              {variant.focus.map((item) => (
+              {data.focus.map((item) => (
                 <span key={item}>{item}</span>
               ))}
             </div>
-            {variant.sections.additional ? (
+            {data.sections.additional ? (
               <p className="availability">
                 <strong>Disponibilidad y encaje operativo</strong>
-                {variant.sections.additional}
+                {data.sections.additional}
               </p>
             ) : null}
           </header>
 
-          <Section title="Experiencia laboral" icon={variant.icons.experience}>
+          <Section title="Experiencia laboral" icon={icons.experience}>
             <div className="timeline">
-              {variant.sections.experience.map((entry) => (
+              {data.sections.experience.map((entry) => (
                 <div className="entry" key={`${entry.organization}-${entry.period}`}>
                   <h3>{entry.title}</h3>
                   <time>{entry.period}</time>
@@ -70,9 +103,9 @@ export function Resume({ variant }: ResumeProps) {
             </div>
           </Section>
 
-          <Section title="Proyectos destacados" icon={variant.icons.projects}>
+          <Section title="Proyectos destacados" icon={icons.projects}>
             <div className="project-grid">
-              {variant.sections.projects.map((project) => (
+              {data.sections.projects.map((project) => (
                 <article className="project" key={project.name}>
                   <h3>{project.name}</h3>
                   <p>{project.description}</p>
@@ -81,9 +114,9 @@ export function Resume({ variant }: ResumeProps) {
             </div>
           </Section>
 
-          <Section title="Formación" icon={variant.icons.education}>
+          <Section title="Formación" icon={icons.education}>
             <div className="timeline">
-              {variant.sections.education.map((entry) => (
+              {data.sections.education.map((entry) => (
                 <div className="entry" key={`${entry.degree}-${entry.period}`}>
                   <h3>{entry.degree}</h3>
                   <time>{entry.period}</time>

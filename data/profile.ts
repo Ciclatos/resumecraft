@@ -37,3 +37,17 @@ export const profile = {
 };
 
 export type Profile = typeof profile;
+
+export const demoProfileData = {
+  name: profile.name,
+  photo: profile.photo,
+  contact: {
+    email: profile.email,
+    phone: profile.phone,
+    location: profile.location,
+    portfolio: profile.portfolio,
+    linkedIn: profile.linkedIn,
+    github: profile.github,
+  },
+  languages: profile.languages,
+};
