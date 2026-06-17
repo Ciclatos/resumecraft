@@ -60,6 +60,8 @@
     page-break-before: avoid;
     page-break-inside: avoid;
     width: 210mm !important;
+    --leading-factor: calc(var(--scale-leading, 1.24) * var(--line-height-slider, 1));
+    --spacing-factor: calc(var(--density-gap, 1) * var(--spacing-slider, 1));
   }
 
   .sidebar {
@@ -260,7 +262,7 @@
 
   .entry p {
     font-size: calc(7.4pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
-    line-height: 1.22 !important;
+    line-height: calc(1.22 * var(--line-height-slider, 1)) !important;
     margin-top: 1pt !important;
   }
 
@@ -281,7 +283,7 @@
 
   .project p {
     font-size: calc(7.1pt + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
-    line-height: 1.18 !important;
+    line-height: calc(1.18 * var(--line-height-slider, 1)) !important;
   }
 
   .print-compact .project:nth-child(n + 4),
@@ -492,7 +494,7 @@
   .ats-header {
     border-bottom: 1px solid var(--line) !important;
     display: grid !important;
-    gap: 4pt !important;
+    gap: calc(4pt * var(--spacing-factor, 1)) !important;
     padding: 7mm 9mm 4mm !important;
   }
 
@@ -511,7 +513,7 @@
   .ats-header p,
   .contact-bar li {
     font-size: calc((7.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
-    line-height: var(--scale-leading, 1.2) !important;
+    line-height: var(--leading-factor, 1.2) !important;
   }
 
   .template-header-identity {
@@ -553,7 +555,7 @@
   .minimal-main,
   .creative-main,
   .ats-main {
-    gap: calc(2.8mm * var(--density-gap, 1)) !important;
+    gap: calc(2.8mm * var(--spacing-factor, 1)) !important;
   }
 
   .creative-header {
@@ -592,7 +594,7 @@
   }
 
   .resume-lists {
-    gap: calc(7pt * var(--density-gap, 1)) !important;
+    gap: calc(7pt * var(--spacing-factor, 1)) !important;
   }
 
   .list-block h2 {
@@ -601,26 +603,26 @@
   }
 
   .list-block ul {
-    gap: calc(2.8pt * var(--density-gap, 1)) !important;
+    gap: calc(2.8pt * var(--spacing-factor, 1)) !important;
   }
 
   .list-block li {
     font-size: calc((6.8pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
-    line-height: var(--scale-leading, 1.16) !important;
+    line-height: var(--leading-factor, 1.16) !important;
   }
 
   .resume .summary {
     font-size: calc((8.2pt * var(--scale-body, 1)) + var(--font-delta, 0pt) + var(--font-slider-delta, 0px)) !important;
-    line-height: var(--scale-leading, 1.28) !important;
+    line-height: var(--leading-factor, 1.28) !important;
   }
 
   .resume .section {
-    margin-bottom: calc(3mm * var(--density-gap, 1)) !important;
-    padding-bottom: calc(3mm * var(--density-gap, 1)) !important;
+    margin-bottom: calc(3mm * var(--spacing-factor, 1)) !important;
+    padding-bottom: calc(3mm * var(--spacing-factor, 1)) !important;
   }
 
   .resume .timeline {
-    gap: calc(5pt * var(--density-gap, 1)) !important;
+    gap: calc(5pt * var(--spacing-factor, 1)) !important;
   }
 
   .sidebar {

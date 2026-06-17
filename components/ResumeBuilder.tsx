@@ -110,6 +110,64 @@ const fontSizeOptions: Array<{ id: FontSize; label: string }> = [
   { id: "large", label: "Grande" },
 ];
 
+const visualPresets = [
+  {
+    id: "compact",
+    label: "Compacto",
+    settings: {
+      typeScale: "compact",
+      density: "compact",
+      fontSize: "small",
+      fontScale: 88,
+      lineHeightScale: 92,
+      spacingScale: 82,
+    },
+  },
+  {
+    id: "normal",
+    label: "Normal",
+    settings: {
+      typeScale: "normal",
+      density: "normal",
+      fontSize: "normal",
+      fontScale: 100,
+      lineHeightScale: 100,
+      spacingScale: 100,
+    },
+  },
+  {
+    id: "wide",
+    label: "Amplio",
+    settings: {
+      typeScale: "wide",
+      density: "airy",
+      fontSize: "normal",
+      fontScale: 115,
+      lineHeightScale: 112,
+      spacingScale: 122,
+    },
+  },
+  {
+    id: "extra-wide",
+    label: "Muy amplio",
+    settings: {
+      typeScale: "wide",
+      density: "airy",
+      fontSize: "large",
+      fontScale: 135,
+      lineHeightScale: 130,
+      spacingScale: 140,
+    },
+  },
+] satisfies Array<{
+  id: string;
+  label: string;
+  settings: Pick<
+    BuilderSettings,
+    "typeScale" | "density" | "fontSize" | "fontScale" | "lineHeightScale" | "spacingScale"
+  >;
+}>;
+
 export function ResumeBuilder() {
   const [resume, setResume] = useState<ResumeData>(exampleResumeData);
   const [settings, setSettings] = useState<BuilderSettings>(defaultBuilderSettings);
@@ -177,6 +235,10 @@ export function ResumeBuilder() {
     setPhotoError("");
   }
 
+  function applyVisualPreset(next: (typeof visualPresets)[number]["settings"]) {
+    updateSettings(next);
+  }
+
   function handlePhoto(file: File | undefined) {
     setPhotoError("");
 
@@ -228,6 +290,21 @@ export function ResumeBuilder() {
             onChange={(template) => updateSettings({ template })}
           />
 
+          <section className="editor-section editor-section-tight">
+            <h2>Presets rápidos</h2>
+            <div className="segmented-control segmented-control-four">
+              {visualPresets.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => applyVisualPreset(preset.settings)}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </section>
+
           <SegmentedControl
             label="Auto fit visual"
             value={settings.typeScale}
@@ -242,9 +319,31 @@ export function ResumeBuilder() {
             onChange={(fontSize) => updateSettings({ fontSize })}
           />
 
-          <ScaleSlider
+          <RangeSlider
+            label="Escala tipográfica"
             value={settings.fontScale}
+            min={80}
+            max={135}
+            suffix="%"
             onChange={(fontScale) => updateSettings({ fontScale })}
+          />
+
+          <RangeSlider
+            label="Interlineado"
+            value={settings.lineHeightScale}
+            min={90}
+            max={130}
+            suffix="%"
+            onChange={(lineHeightScale) => updateSettings({ lineHeightScale })}
+          />
+
+          <RangeSlider
+            label="Espaciado vertical"
+            value={settings.spacingScale}
+            min={80}
+            max={140}
+            suffix="%"
+            onChange={(spacingScale) => updateSettings({ spacingScale })}
           />
 
           <SegmentedControl
@@ -404,6 +503,8 @@ export function ResumeBuilder() {
             density={settings.density}
             fontSize={settings.fontSize}
             fontScale={settings.fontScale}
+            lineHeightScale={settings.lineHeightScale}
+            spacingScale={settings.spacingScale}
             showDemoLinks={false}
             showPhoto={settings.showPhoto}
             showQr={settings.showQr && Boolean(resume.contact.portfolio)}
@@ -459,24 +560,35 @@ function TemplateSelector({
   );
 }
 
-function ScaleSlider({
+function RangeSlider({
+  label,
   value,
+  min,
+  max,
+  suffix = "",
   onChange,
 }: {
+  label: string;
   value: number;
+  min: number;
+  max: number;
+  suffix?: string;
   onChange: (value: number) => void;
 }) {
   return (
     <section className="editor-section editor-section-tight">
       <div className="range-title">
-        <h2>Escala tipográfica fina</h2>
-        <strong>{value}%</strong>
+        <h2>{label}</h2>
+        <strong>
+          {value}
+          {suffix}
+        </strong>
       </div>
       <input
-        aria-label="Escala tipográfica fina"
+        aria-label={label}
         className="scale-slider"
-        max={115}
-        min={85}
+        max={max}
+        min={min}
         step={1}
         type="range"
         value={value}

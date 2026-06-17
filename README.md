@@ -15,7 +15,8 @@ It keeps the strongest parts of the original prototype as a reusable product: st
 - Structured resume data for config-driven demos.
 - Fictional demo routes kept separate from the product experience.
 - Local photo upload with JPG, PNG and WEBP support.
-- Typography scale slider, font presets and density controls for better A4 fitting.
+- Typography, line-height and vertical spacing sliders for better A4 fitting.
+- Coordinated visual presets: compact, normal, wide and extra wide.
 - Photo and portfolio QR visibility toggles across templates.
 - Ready for Vercel deployment.
 
@@ -64,7 +65,9 @@ The MVP supports:
 - photo upload from the user's device
 - template selection
 - auto fit visual: compact, normal and wide
-- typography scale slider from 85% to 115%
+- typography scale slider from 80% to 135%
+- line-height slider from 90% to 130%
+- vertical spacing slider from 80% to 140%
 - manual font size: small, normal and large
 - density: compact, normal and airy
 - show or hide photo

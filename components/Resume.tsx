@@ -22,6 +22,8 @@ type ResumeProps = {
   density?: ResumeDensity;
   fontSize?: FontSize;
   fontScale?: number;
+  lineHeightScale?: number;
+  spacingScale?: number;
   showDemoLinks?: boolean;
   showPhoto?: boolean;
   showQr?: boolean;
@@ -58,6 +60,8 @@ export function Resume({
   density = "normal",
   fontSize = "normal",
   fontScale = 100,
+  lineHeightScale = 100,
+  spacingScale = 100,
   showDemoLinks = true,
   showPhoto = true,
   showQr = false,
@@ -75,6 +79,8 @@ export function Resume({
   ].join(" ");
   const resumeStyle = {
     "--font-slider-delta": `${(fontScale - 100) * 0.08}px`,
+    "--line-height-slider": lineHeightScale / 100,
+    "--spacing-slider": spacingScale / 100,
   } as React.CSSProperties;
 
   return (

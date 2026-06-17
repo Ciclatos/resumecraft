@@ -50,6 +50,8 @@ export type BuilderSettings = {
   density: ResumeDensity;
   fontSize: FontSize;
   fontScale: number;
+  lineHeightScale: number;
+  spacingScale: number;
   showPhoto: boolean;
   showQr: boolean;
 };
@@ -175,6 +177,8 @@ export const defaultBuilderSettings: BuilderSettings = {
   density: "normal",
   fontSize: "normal",
   fontScale: 100,
+  lineHeightScale: 100,
+  spacingScale: 100,
   showPhoto: true,
   showQr: true,
 };
