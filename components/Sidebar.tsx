@@ -25,6 +25,13 @@ export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps
   const portfolioLabel = contact.portfolio.replace(/^https?:\/\//, "");
   const linkedInLabel = contact.linkedIn.replace(/^https?:\/\/(www\.)?/, "");
   const githubLabel = contact.github.replace(/^https?:\/\/(www\.)?/, "");
+  const initials =
+    data.name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("") || "RC";
 
   return (
     <aside className="sidebar">
@@ -34,12 +41,7 @@ export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps
         </div>
       ) : showPhoto ? (
         <div className="portrait portrait-fallback" aria-hidden="true">
-          {data.name
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 2)
-            .map((part) => part[0])
-            .join("")}
+          {initials}
         </div>
       ) : null}
 

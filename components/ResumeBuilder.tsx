@@ -29,6 +29,8 @@ import {
 
 const storageKey = "resumecraft.builder.v2";
 const maxPhotoBytes = 1.5 * 1024 * 1024;
+const maxProcessedPhotoBytes = 850 * 1024;
+const acceptedPhotoTypes = ["image/jpeg", "image/png", "image/webp"];
 
 const emptyResumeData: ResumeData = {
   name: "",
@@ -196,7 +198,13 @@ export function ResumeBuilder() {
 
   useEffect(() => {
     if (loaded) {
-      window.localStorage.setItem(storageKey, JSON.stringify({ resume, settings }));
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify({ resume, settings }));
+      } catch {
+        setPhotoError(
+          "No se pudo guardar localmente. Prueba con una foto más ligera o quita la foto actual.",
+        );
+      }
     }
   }, [loaded, resume, settings]);
 
@@ -239,28 +247,35 @@ export function ResumeBuilder() {
     updateSettings(next);
   }
 
-  function handlePhoto(file: File | undefined) {
+  async function handlePhoto(file: File | undefined) {
     setPhotoError("");
 
     if (!file) {
       return;
     }
 
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    if (!acceptedPhotoTypes.includes(file.type)) {
       setPhotoError("Usa una imagen JPG, PNG o WEBP.");
       return;
     }
 
     if (file.size > maxPhotoBytes) {
-      setPhotoError("La imagen supera 1.5 MB. Elige una versión más ligera.");
+      setPhotoError("La imagen supera 1.5 MB. Usa una foto más ligera para guardarla en este navegador.");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      update({ photo: String(reader.result) });
-    };
-    reader.readAsDataURL(file);
+    try {
+      const photo = await fileToOptimizedDataUrl(file);
+
+      if (photo.length > maxProcessedPhotoBytes) {
+        setPhotoError("La foto sigue siendo pesada después de optimizarla. Prueba otra imagen más pequeña.");
+        return;
+      }
+
+      update({ photo });
+    } catch {
+      setPhotoError("No se pudo leer la imagen. Intenta con otro archivo JPG, PNG o WEBP.");
+    }
   }
 
   return (
@@ -675,11 +690,14 @@ function PhotoField({
         {photo ? <img src={photo} alt="Vista previa de foto" /> : <ImagePlus size={28} aria-hidden="true" />}
         <label>
           <strong>Subir foto</strong>
-          <span>JPG, PNG o WEBP hasta 1.5 MB</span>
+          <span>JPG, PNG o WEBP hasta 1.5 MB. Se optimiza para guardarse localmente.</span>
           <input
             accept="image/jpeg,image/png,image/webp"
             type="file"
-            onChange={(event) => onFile(event.target.files?.[0])}
+            onChange={(event) => {
+              onFile(event.target.files?.[0]);
+              event.currentTarget.value = "";
+            }}
           />
         </label>
       </div>
@@ -691,6 +709,47 @@ function PhotoField({
       {error ? <p className="field-error">{error}</p> : null}
     </div>
   );
+}
+
+function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("file-read-error"));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("image-load-error"));
+    image.src = src;
+  });
+}
+
+async function fileToOptimizedDataUrl(file: File) {
+  const originalDataUrl = await fileToDataUrl(file);
+  const image = await loadImage(originalDataUrl);
+  const maxSize = 720;
+  const ratio = Math.min(1, maxSize / Math.max(image.naturalWidth, image.naturalHeight));
+  const width = Math.max(1, Math.round(image.naturalWidth * ratio));
+  const height = Math.max(1, Math.round(image.naturalHeight * ratio));
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    return originalDataUrl;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, width, height);
+  context.drawImage(image, 0, 0, width, height);
+
+  return canvas.toDataURL("image/jpeg", 0.86);
 }
 
 function TextListEditor({

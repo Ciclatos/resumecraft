@@ -338,13 +338,21 @@ function ATSCleanResume({
 function HeaderPhoto({ data, showPhoto = true }: { data: ResumeData; showPhoto?: boolean }) {
   const photo = data.photo?.trim();
 
-  if (!showPhoto || !photo) {
+  if (!showPhoto) {
     return null;
   }
 
+  const initials =
+    data.name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("") || "RC";
+
   return (
-    <div className="template-header-photo">
-      <img src={photo} alt={`Foto profesional de ${data.name}`} />
+    <div className={photo ? "template-header-photo" : "template-header-photo template-header-photo-fallback"}>
+      {photo ? <img src={photo} alt={`Foto profesional de ${data.name}`} /> : initials}
     </div>
   );
 }

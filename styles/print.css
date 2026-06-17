@@ -522,6 +522,7 @@
 
   .template-header-photo {
     border-width: 1pt !important;
+    font-size: 10pt !important;
     width: 28pt !important;
   }
 

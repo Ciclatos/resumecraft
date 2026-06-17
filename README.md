@@ -15,6 +15,7 @@ It keeps the strongest parts of the original prototype as a reusable product: st
 - Structured resume data for config-driven demos.
 - Fictional demo routes kept separate from the product experience.
 - Local photo upload with JPG, PNG and WEBP support.
+- Uploaded photos are converted to local data URLs and optimized for browser storage.
 - Typography, line-height and vertical spacing sliders for better A4 fitting.
 - Coordinated visual presets: compact, normal, wide and extra wide.
 - Photo and portfolio QR visibility toggles across templates.
