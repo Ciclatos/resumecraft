@@ -1,14 +1,16 @@
 import { QRCodeSVG } from "qrcode.react";
+import { t, type AppLanguage } from "../data/i18n";
 
 type QRCodeProps = {
+  language?: AppLanguage;
   value: string;
 };
 
-export function QRCode({ value }: QRCodeProps) {
+export function QRCode({ language = "es", value }: QRCodeProps) {
   return (
     <div className="qr-card">
       <QRCodeSVG value={value} size={96} level="M" marginSize={1} />
-      <p>Escanea para abrir el portafolio profesional.</p>
+      <p>{t(language, "qr.help")}</p>
     </div>
   );
 }

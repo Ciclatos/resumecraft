@@ -26,6 +26,7 @@ import {
   type ResumeTemplate,
   type TypeScale,
 } from "../data/resume";
+import { languageOptions, t, type AppLanguage, type TranslationKey } from "../data/i18n";
 
 const storageKey = "resumecraft.builder.v2";
 const maxPhotoBytes = 1.5 * 1024 * 1024;
@@ -59,63 +60,63 @@ const emptyResumeData: ResumeData = {
 const templateOptions: Array<{
   id: ResumeTemplate;
   name: string;
-  description: string;
-  bestFor: string;
+  descriptionKey: TranslationKey;
+  bestForKey: TranslationKey;
 }> = [
   {
     id: "modern-sidebar",
     name: "Modern Sidebar",
-    description: "General moderno con identidad visual fuerte.",
-    bestFor: "general moderno",
+    descriptionKey: "template.modernSidebar.description",
+    bestForKey: "template.modernSidebar.bestFor",
   },
   {
     id: "professional-corporate",
     name: "Professional Corporate",
-    description: "Tradicional, sobria y fuerte para empresas grandes.",
-    bestFor: "empresas tradicionales",
+    descriptionKey: "template.professionalCorporate.description",
+    bestForKey: "template.professionalCorporate.bestFor",
   },
   {
     id: "minimal-clean",
     name: "Minimal Clean",
-    description: "Limpia, técnica y con lectura muy cómoda.",
-    bestFor: "tecnología / limpio",
+    descriptionKey: "template.minimalClean.description",
+    bestForKey: "template.minimalClean.bestFor",
   },
   {
     id: "creative-tech",
     name: "Creative Tech",
-    description: "Moderna, visual y orientada a producto o portafolio.",
-    bestFor: "portafolio / tech creativo",
+    descriptionKey: "template.creativeTech.description",
+    bestForKey: "template.creativeTech.bestFor",
   },
   {
     id: "ats-clean",
     name: "ATS Clean",
-    description: "Lineal, simple y optimizada para lectura automática.",
-    bestFor: "portales de empleo / ATS",
+    descriptionKey: "template.atsClean.description",
+    bestForKey: "template.atsClean.bestFor",
   },
 ];
 
-const scaleOptions: Array<{ id: TypeScale; label: string }> = [
-  { id: "compact", label: "Compacto" },
-  { id: "normal", label: "Normal" },
-  { id: "wide", label: "Amplio" },
+const scaleOptions: Array<{ id: TypeScale; labelKey: TranslationKey }> = [
+  { id: "compact", labelKey: "option.compact" },
+  { id: "normal", labelKey: "option.normal" },
+  { id: "wide", labelKey: "option.wide" },
 ];
 
-const densityOptions: Array<{ id: ResumeDensity; label: string }> = [
-  { id: "compact", label: "Compacta" },
-  { id: "normal", label: "Normal" },
-  { id: "airy", label: "Aireada" },
+const densityOptions: Array<{ id: ResumeDensity; labelKey: TranslationKey }> = [
+  { id: "compact", labelKey: "option.compactFeminine" },
+  { id: "normal", labelKey: "option.normal" },
+  { id: "airy", labelKey: "option.airy" },
 ];
 
-const fontSizeOptions: Array<{ id: FontSize; label: string }> = [
-  { id: "small", label: "Pequeño" },
-  { id: "normal", label: "Normal" },
-  { id: "large", label: "Grande" },
+const fontSizeOptions: Array<{ id: FontSize; labelKey: TranslationKey }> = [
+  { id: "small", labelKey: "option.small" },
+  { id: "normal", labelKey: "option.normal" },
+  { id: "large", labelKey: "option.large" },
 ];
 
 const visualPresets = [
   {
     id: "compact",
-    label: "Compacto",
+    labelKey: "option.compact",
     settings: {
       typeScale: "compact",
       density: "compact",
@@ -127,7 +128,7 @@ const visualPresets = [
   },
   {
     id: "normal",
-    label: "Normal",
+    labelKey: "option.normal",
     settings: {
       typeScale: "normal",
       density: "normal",
@@ -139,7 +140,7 @@ const visualPresets = [
   },
   {
     id: "wide",
-    label: "Amplio",
+    labelKey: "option.wide",
     settings: {
       typeScale: "wide",
       density: "airy",
@@ -151,7 +152,7 @@ const visualPresets = [
   },
   {
     id: "extra-wide",
-    label: "Muy amplio",
+    labelKey: "option.extraWide",
     settings: {
       typeScale: "wide",
       density: "airy",
@@ -163,7 +164,7 @@ const visualPresets = [
   },
 ] satisfies Array<{
   id: string;
-  label: string;
+  labelKey: TranslationKey;
   settings: Pick<
     BuilderSettings,
     "typeScale" | "density" | "fontSize" | "fontScale" | "lineHeightScale" | "spacingScale"
@@ -175,6 +176,7 @@ export function ResumeBuilder() {
   const [settings, setSettings] = useState<BuilderSettings>(defaultBuilderSettings);
   const [loaded, setLoaded] = useState(false);
   const [photoError, setPhotoError] = useState("");
+  const language = settings.language;
 
   useEffect(() => {
     const saved = window.localStorage.getItem(storageKey);
@@ -202,11 +204,13 @@ export function ResumeBuilder() {
         window.localStorage.setItem(storageKey, JSON.stringify({ resume, settings }));
       } catch {
         setPhotoError(
-          "No se pudo guardar localmente. Prueba con una foto más ligera o quita la foto actual.",
+          language === "en"
+            ? "Could not save locally. Try a lighter photo or remove the current photo."
+            : "No se pudo guardar localmente. Prueba con una foto más ligera o quita la foto actual.",
         );
       }
     }
-  }, [loaded, resume, settings]);
+  }, [language, loaded, resume, settings]);
 
   function update(next: Partial<ResumeData>) {
     setResume((current) => ({ ...current, ...next }));
@@ -232,14 +236,14 @@ export function ResumeBuilder() {
 
   function resetData() {
     setResume(emptyResumeData);
-    setSettings(defaultBuilderSettings);
+    setSettings((current) => ({ ...defaultBuilderSettings, language: current.language }));
     setPhotoError("");
     window.localStorage.removeItem(storageKey);
   }
 
   function loadExample() {
     setResume(exampleResumeData);
-    setSettings(defaultBuilderSettings);
+    setSettings((current) => ({ ...defaultBuilderSettings, language: current.language }));
     setPhotoError("");
   }
 
@@ -255,12 +259,18 @@ export function ResumeBuilder() {
     }
 
     if (!acceptedPhotoTypes.includes(file.type)) {
-      setPhotoError("Usa una imagen JPG, PNG o WEBP.");
+      setPhotoError(
+        language === "en" ? "Use a JPG, PNG or WEBP image." : "Usa una imagen JPG, PNG o WEBP.",
+      );
       return;
     }
 
     if (file.size > maxPhotoBytes) {
-      setPhotoError("La imagen supera 1.5 MB. Usa una foto más ligera para guardarla en este navegador.");
+      setPhotoError(
+        language === "en"
+          ? "The image is larger than 1.5 MB. Use a lighter photo to save it in this browser."
+          : "La imagen supera 1.5 MB. Usa una foto más ligera para guardarla en este navegador.",
+      );
       return;
     }
 
@@ -268,13 +278,21 @@ export function ResumeBuilder() {
       const photo = await fileToOptimizedDataUrl(file);
 
       if (photo.length > maxProcessedPhotoBytes) {
-        setPhotoError("La foto sigue siendo pesada después de optimizarla. Prueba otra imagen más pequeña.");
+        setPhotoError(
+          language === "en"
+            ? "The photo is still too large after optimization. Try a smaller image."
+            : "La foto sigue siendo pesada después de optimizarla. Prueba otra imagen más pequeña.",
+        );
         return;
       }
 
       update({ photo });
     } catch {
-      setPhotoError("No se pudo leer la imagen. Intenta con otro archivo JPG, PNG o WEBP.");
+      setPhotoError(
+        language === "en"
+          ? "Could not read the image. Try another JPG, PNG or WEBP file."
+          : "No se pudo leer la imagen. Intenta con otro archivo JPG, PNG o WEBP.",
+      );
     }
   }
 
@@ -285,28 +303,33 @@ export function ResumeBuilder() {
           ResumeCraft
         </Link>
         <div className="builder-header-actions">
-          <Link href="/cv/base">Ver demo</Link>
+          <Link href="/cv/base">{t(language, "nav.demo")}</Link>
           <a href="https://github.com/Ciclatos/resumecraft">GitHub</a>
         </div>
       </header>
 
       <div className="builder-workspace">
-        <form className="builder-panel" aria-label="Editor de CV">
+        <form className="builder-panel" aria-label={t(language, "builder.aria")}>
           <div className="builder-panel-head">
-            <h1>Builder</h1>
-            <p>
-              Crea un CV profesional sin login. Todo se guarda localmente en este
-              navegador.
-            </p>
+            <h1>{t(language, "builder.title")}</h1>
+            <p>{t(language, "builder.description")}</p>
           </div>
 
+          <SegmentedControl
+            label={t(language, "settings.language")}
+            value={settings.language}
+            options={languageOptions}
+            onChange={(nextLanguage) => updateSettings({ language: nextLanguage })}
+          />
+
           <TemplateSelector
+            language={language}
             selected={settings.template}
             onChange={(template) => updateSettings({ template })}
           />
 
           <section className="editor-section editor-section-tight">
-            <h2>Presets rápidos</h2>
+            <h2>{t(language, "settings.presets")}</h2>
             <div className="segmented-control segmented-control-four">
               {visualPresets.map((preset) => (
                 <button
@@ -314,28 +337,30 @@ export function ResumeBuilder() {
                   type="button"
                   onClick={() => applyVisualPreset(preset.settings)}
                 >
-                  {preset.label}
+                  {t(language, preset.labelKey)}
                 </button>
               ))}
             </div>
           </section>
 
           <SegmentedControl
-            label="Auto fit visual"
+            label={t(language, "settings.autoFit")}
             value={settings.typeScale}
             options={scaleOptions}
+            language={language}
             onChange={(typeScale) => updateSettings({ typeScale })}
           />
 
           <SegmentedControl
-            label="Tamaño de letra"
+            label={t(language, "settings.fontSize")}
             value={settings.fontSize}
             options={fontSizeOptions}
+            language={language}
             onChange={(fontSize) => updateSettings({ fontSize })}
           />
 
           <RangeSlider
-            label="Escala tipográfica"
+            label={t(language, "settings.fontScale")}
             value={settings.fontScale}
             min={80}
             max={135}
@@ -344,7 +369,7 @@ export function ResumeBuilder() {
           />
 
           <RangeSlider
-            label="Interlineado"
+            label={t(language, "settings.lineHeight")}
             value={settings.lineHeightScale}
             min={90}
             max={130}
@@ -353,7 +378,7 @@ export function ResumeBuilder() {
           />
 
           <RangeSlider
-            label="Espaciado vertical"
+            label={t(language, "settings.spacing")}
             value={settings.spacingScale}
             min={80}
             max={140}
@@ -362,33 +387,34 @@ export function ResumeBuilder() {
           />
 
           <SegmentedControl
-            label="Densidad"
+            label={t(language, "settings.density")}
             value={settings.density}
             options={densityOptions}
+            language={language}
             onChange={(density) => updateSettings({ density })}
           />
 
           <section className="editor-section editor-section-tight">
-            <h2>Elementos visuales</h2>
+            <h2>{t(language, "settings.visuals")}</h2>
             <ToggleControl
               checked={settings.showPhoto}
-              label="Mostrar foto"
+              label={t(language, "settings.showPhoto")}
               onChange={(showPhoto) => updateSettings({ showPhoto })}
             />
             <ToggleControl
               checked={settings.showQr}
-              label="Mostrar QR de portafolio"
+              label={t(language, "settings.showQr")}
               onChange={(showQr) => updateSettings({ showQr })}
             />
           </section>
 
           <section className="editor-section">
-            <h2>Datos principales</h2>
-            <Field label="Nombre">
+            <h2>{t(language, "settings.mainData")}</h2>
+            <Field label={t(language, "field.name")}>
               <input value={resume.name} onChange={(event) => update({ name: event.target.value })} />
             </Field>
 
-            <Field label="Titular profesional">
+            <Field label={t(language, "field.headline")}>
               <input
                 value={resume.headline}
                 onChange={(event) => update({ headline: event.target.value })}
@@ -396,6 +422,7 @@ export function ResumeBuilder() {
             </Field>
 
             <PhotoField
+              language={language}
               photo={resume.photo ?? ""}
               error={photoError}
               onFile={handlePhoto}
@@ -403,14 +430,14 @@ export function ResumeBuilder() {
             />
 
             <div className="field-grid">
-              <Field label="Email">
+              <Field label={t(language, "field.email")}>
                 <input
                   type="email"
                   value={resume.contact.email}
                   onChange={(event) => updateContact("email", event.target.value)}
                 />
               </Field>
-              <Field label="Teléfono">
+              <Field label={t(language, "field.phone")}>
                 <input
                   value={resume.contact.phone}
                   onChange={(event) => updateContact("phone", event.target.value)}
@@ -418,14 +445,14 @@ export function ResumeBuilder() {
               </Field>
             </div>
 
-            <Field label="Ubicación">
+            <Field label={t(language, "field.location")}>
               <input
                 value={resume.contact.location}
                 onChange={(event) => updateContact("location", event.target.value)}
               />
             </Field>
 
-            <Field label="Portafolio">
+            <Field label={t(language, "field.portfolio")}>
               <input
                 value={resume.contact.portfolio}
                 onChange={(event) => updateContact("portfolio", event.target.value)}
@@ -447,7 +474,7 @@ export function ResumeBuilder() {
               </Field>
             </div>
 
-            <Field label="Resumen">
+            <Field label={t(language, "field.summary")}>
               <textarea
                 rows={5}
                 value={resume.summary}
@@ -457,42 +484,49 @@ export function ResumeBuilder() {
           </section>
 
           <TextListEditor
-            title="Enfoques principales"
+            language={language}
+            title={t(language, "section.focus")}
             items={resume.focus}
-            addLabel="Agregar enfoque"
+            addLabel={t(language, "actions.addFocus")}
             onChange={(focus) => update({ focus })}
           />
 
           <ExperienceEditor
+            language={language}
             items={resume.sections.experience}
             onChange={(experience) => updateSections({ experience })}
           />
 
           <EducationEditor
+            language={language}
             items={resume.sections.education}
             onChange={(education) => updateSections({ education })}
           />
 
           <ProjectEditor
+            language={language}
             items={resume.sections.projects}
             onChange={(projects) => updateSections({ projects })}
           />
 
           <TextListEditor
-            title="Habilidades"
+            language={language}
+            title={t(language, "section.skills")}
             items={resume.sections.skills}
-            addLabel="Agregar habilidad"
+            addLabel={t(language, "actions.addSkill")}
             onChange={(skills) => updateSections({ skills })}
           />
 
           <TextListEditor
-            title="Herramientas"
+            language={language}
+            title={t(language, "section.tools")}
             items={resume.sections.tools}
-            addLabel="Agregar herramienta"
+            addLabel={t(language, "actions.addTool")}
             onChange={(tools) => updateSections({ tools })}
           />
 
           <LanguageEditor
+            language={language}
             items={resume.sections.languages}
             onChange={(languages) => updateSections({ languages })}
           />
@@ -500,11 +534,11 @@ export function ResumeBuilder() {
           <div className="builder-actions">
             <button type="button" onClick={loadExample}>
               <Wand2 size={16} aria-hidden="true" />
-              Cargar ejemplo
+              {t(language, "actions.loadExample")}
             </button>
             <button type="button" onClick={resetData}>
               <RotateCcw size={16} aria-hidden="true" />
-              Resetear
+              {t(language, "actions.reset")}
             </button>
           </div>
         </form>
@@ -512,6 +546,7 @@ export function ResumeBuilder() {
         <div className="builder-preview">
           <Resume
             data={resume}
+            language={language}
             label={templateOptions.find((item) => item.id === settings.template)?.name}
             template={settings.template}
             typeScale={settings.typeScale}
@@ -527,11 +562,11 @@ export function ResumeBuilder() {
               <>
                 <button className="toolbar-button" type="button" onClick={loadExample}>
                   <Wand2 size={16} aria-hidden="true" />
-                  Ejemplo
+                  {t(language, "actions.loadExample")}
                 </button>
                 <button className="toolbar-button" type="button" onClick={resetData}>
                   <RotateCcw size={16} aria-hidden="true" />
-                  Reset
+                  {t(language, "actions.resetShort")}
                 </button>
               </>
             }
@@ -543,15 +578,17 @@ export function ResumeBuilder() {
 }
 
 function TemplateSelector({
+  language,
   selected,
   onChange,
 }: {
+  language: AppLanguage;
   selected: ResumeTemplate;
   onChange: (template: ResumeTemplate) => void;
 }) {
   return (
     <section className="editor-section">
-      <h2>Plantilla</h2>
+      <h2>{t(language, "settings.template")}</h2>
       <div className="template-grid">
         {templateOptions.map((template) => (
           <button
@@ -566,8 +603,8 @@ function TemplateSelector({
               <em />
             </span>
             <strong>{template.name}</strong>
-            <small>{template.description}</small>
-            <span>{template.bestFor}</span>
+            <small>{t(language, template.descriptionKey)}</small>
+            <span>{t(language, template.bestForKey)}</span>
           </button>
         ))}
       </div>
@@ -635,6 +672,7 @@ function ToggleControl({
 }
 
 function SegmentedControl<T extends string>({
+  language,
   label,
   value,
   options,
@@ -642,7 +680,8 @@ function SegmentedControl<T extends string>({
 }: {
   label: string;
   value: T;
-  options: Array<{ id: T; label: string }>;
+  options: Array<{ id: T; label?: string; labelKey?: TranslationKey }>;
+  language?: AppLanguage;
   onChange: (value: T) => void;
 }) {
   return (
@@ -656,7 +695,7 @@ function SegmentedControl<T extends string>({
             type="button"
             onClick={() => onChange(option.id)}
           >
-            {option.label}
+            {option.labelKey ? t(language, option.labelKey) : option.label}
           </button>
         ))}
       </div>
@@ -674,11 +713,13 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function PhotoField({
+  language,
   photo,
   error,
   onFile,
   onClear,
 }: {
+  language: AppLanguage;
   photo: string;
   error: string;
   onFile: (file: File | undefined) => void;
@@ -687,10 +728,14 @@ function PhotoField({
   return (
     <div className="photo-field">
       <div className="photo-dropzone">
-        {photo ? <img src={photo} alt="Vista previa de foto" /> : <ImagePlus size={28} aria-hidden="true" />}
+        {photo ? (
+          <img src={photo} alt={t(language, "photo.alt")} />
+        ) : (
+          <ImagePlus size={28} aria-hidden="true" />
+        )}
         <label>
-          <strong>Subir foto</strong>
-          <span>JPG, PNG o WEBP hasta 1.5 MB. Se optimiza para guardarse localmente.</span>
+          <strong>{t(language, "photo.upload")}</strong>
+          <span>{t(language, "photo.help")}</span>
           <input
             accept="image/jpeg,image/png,image/webp"
             type="file"
@@ -703,7 +748,7 @@ function PhotoField({
       </div>
       {photo ? (
         <button className="text-button" type="button" onClick={onClear}>
-          Quitar foto
+          {t(language, "photo.clear")}
         </button>
       ) : null}
       {error ? <p className="field-error">{error}</p> : null}
@@ -753,11 +798,13 @@ async function fileToOptimizedDataUrl(file: File) {
 }
 
 function TextListEditor({
+  language,
   title,
   items,
   addLabel,
   onChange,
 }: {
+  language: AppLanguage;
   title: string;
   items: string[];
   addLabel: string;
@@ -773,7 +820,10 @@ function TextListEditor({
               value={item}
               onChange={(event) => replaceItem(items, index, event.target.value, onChange)}
             />
-            <IconButton label="Eliminar" onClick={() => removeItem(items, index, onChange)} />
+            <IconButton
+              label={t(language, "actions.remove")}
+              onClick={() => removeItem(items, index, onChange)}
+            />
           </div>
         ))}
       </div>
@@ -783,41 +833,44 @@ function TextListEditor({
 }
 
 function ExperienceEditor({
+  language,
   items,
   onChange,
 }: {
+  language: AppLanguage;
   items: ResumeEntry[];
   onChange: (items: ResumeEntry[]) => void;
 }) {
   return (
     <section className="editor-section">
-      <h2>Experiencia</h2>
+      <h2>{t(language, "section.experience")}</h2>
       <div className="item-stack">
         {items.map((item, index) => (
           <EditorCard
             key={`experience-${index}`}
             index={index}
             total={items.length}
+            language={language}
             onMove={(direction) => moveItem(items, index, direction, onChange)}
             onRemove={() => removeItem(items, index, onChange)}
           >
-            <Field label="Cargo">
+            <Field label={t(language, "field.role")}>
               <input value={item.title} onChange={(event) => updateEntry(items, index, "title", event.target.value, onChange)} />
             </Field>
-            <Field label="Organización">
+            <Field label={t(language, "field.organization")}>
               <input value={item.organization} onChange={(event) => updateEntry(items, index, "organization", event.target.value, onChange)} />
             </Field>
-            <Field label="Periodo">
+            <Field label={t(language, "field.period")}>
               <input value={item.period} onChange={(event) => updateEntry(items, index, "period", event.target.value, onChange)} />
             </Field>
-            <Field label="Descripción">
+            <Field label={t(language, "field.description")}>
               <textarea rows={3} value={item.description} onChange={(event) => updateEntry(items, index, "description", event.target.value, onChange)} />
             </Field>
           </EditorCard>
         ))}
       </div>
       <AddButton
-        label="Agregar experiencia"
+        label={t(language, "actions.addExperience")}
         onClick={() =>
           onChange([
             ...items,
@@ -830,41 +883,44 @@ function ExperienceEditor({
 }
 
 function EducationEditor({
+  language,
   items,
   onChange,
 }: {
+  language: AppLanguage;
   items: ResumeEducation[];
   onChange: (items: ResumeEducation[]) => void;
 }) {
   return (
     <section className="editor-section">
-      <h2>Educación</h2>
+      <h2>{t(language, "section.education")}</h2>
       <div className="item-stack">
         {items.map((item, index) => (
           <EditorCard
             key={`education-${index}`}
             index={index}
             total={items.length}
+            language={language}
             onMove={(direction) => moveItem(items, index, direction, onChange)}
             onRemove={() => removeItem(items, index, onChange)}
           >
-            <Field label="Título">
+            <Field label={t(language, "field.title")}>
               <input value={item.degree} onChange={(event) => updateEducation(items, index, "degree", event.target.value, onChange)} />
             </Field>
-            <Field label="Institución">
+            <Field label={t(language, "field.institution")}>
               <input value={item.institution} onChange={(event) => updateEducation(items, index, "institution", event.target.value, onChange)} />
             </Field>
-            <Field label="Periodo">
+            <Field label={t(language, "field.period")}>
               <input value={item.period} onChange={(event) => updateEducation(items, index, "period", event.target.value, onChange)} />
             </Field>
-            <Field label="Detalle">
+            <Field label={t(language, "field.detail")}>
               <textarea rows={3} value={item.detail} onChange={(event) => updateEducation(items, index, "detail", event.target.value, onChange)} />
             </Field>
           </EditorCard>
         ))}
       </div>
       <AddButton
-        label="Agregar educación"
+        label={t(language, "actions.addEducation")}
         onClick={() =>
           onChange([...items, { degree: "", institution: "", period: "", detail: "" }])
         }
@@ -874,66 +930,80 @@ function EducationEditor({
 }
 
 function ProjectEditor({
+  language,
   items,
   onChange,
 }: {
+  language: AppLanguage;
   items: ResumeProject[];
   onChange: (items: ResumeProject[]) => void;
 }) {
   return (
     <section className="editor-section">
-      <h2>Proyectos</h2>
+      <h2>{t(language, "section.projects")}</h2>
       <div className="item-stack">
         {items.map((item, index) => (
           <EditorCard
             key={`project-${index}`}
             index={index}
             total={items.length}
+            language={language}
             onMove={(direction) => moveItem(items, index, direction, onChange)}
             onRemove={() => removeItem(items, index, onChange)}
           >
-            <Field label="Nombre">
+            <Field label={t(language, "field.name")}>
               <input value={item.name} onChange={(event) => updateProject(items, index, "name", event.target.value, onChange)} />
             </Field>
-            <Field label="Descripción">
+            <Field label={t(language, "field.description")}>
               <textarea rows={3} value={item.description} onChange={(event) => updateProject(items, index, "description", event.target.value, onChange)} />
             </Field>
           </EditorCard>
         ))}
       </div>
-      <AddButton label="Agregar proyecto" onClick={() => onChange([...items, { name: "", description: "" }])} />
+      <AddButton
+        label={t(language, "actions.addProject")}
+        onClick={() => onChange([...items, { name: "", description: "" }])}
+      />
     </section>
   );
 }
 
 function LanguageEditor({
+  language,
   items,
   onChange,
 }: {
+  language: AppLanguage;
   items: ResumeLanguage[];
   onChange: (items: ResumeLanguage[]) => void;
 }) {
   return (
     <section className="editor-section">
-      <h2>Idiomas</h2>
+      <h2>{t(language, "section.languages")}</h2>
       <div className="item-stack">
         {items.map((item, index) => (
           <div className="inline-item" key={`language-${index}`}>
             <input
-              aria-label="Idioma"
+              aria-label={t(language, "field.language")}
               value={item.name}
               onChange={(event) => updateLanguage(items, index, "name", event.target.value, onChange)}
             />
             <input
-              aria-label="Nivel"
+              aria-label={t(language, "field.level")}
               value={item.level}
               onChange={(event) => updateLanguage(items, index, "level", event.target.value, onChange)}
             />
-            <IconButton label="Eliminar" onClick={() => removeItem(items, index, onChange)} />
+            <IconButton
+              label={t(language, "actions.remove")}
+              onClick={() => removeItem(items, index, onChange)}
+            />
           </div>
         ))}
       </div>
-      <AddButton label="Agregar idioma" onClick={() => onChange([...items, { name: "", level: "" }])} />
+      <AddButton
+        label={t(language, "actions.addLanguage")}
+        onClick={() => onChange([...items, { name: "", level: "" }])}
+      />
     </section>
   );
 }
@@ -941,12 +1011,14 @@ function LanguageEditor({
 function EditorCard({
   children,
   index,
+  language,
   total,
   onMove,
   onRemove,
 }: {
   children: React.ReactNode;
   index: number;
+  language: AppLanguage;
   total: number;
   onMove: (direction: -1 | 1) => void;
   onRemove: () => void;
@@ -954,13 +1026,23 @@ function EditorCard({
   return (
     <article className="editor-card">
       <div className="editor-card-actions">
-        <button type="button" onClick={() => onMove(-1)} disabled={index === 0} aria-label="Subir">
+        <button
+          type="button"
+          onClick={() => onMove(-1)}
+          disabled={index === 0}
+          aria-label={t(language, "actions.moveUp")}
+        >
           <ArrowUp size={14} aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => onMove(1)} disabled={index === total - 1} aria-label="Bajar">
+        <button
+          type="button"
+          onClick={() => onMove(1)}
+          disabled={index === total - 1}
+          aria-label={t(language, "actions.moveDown")}
+        >
           <ArrowDown size={14} aria-hidden="true" />
         </button>
-        <button type="button" onClick={onRemove} aria-label="Eliminar">
+        <button type="button" onClick={onRemove} aria-label={t(language, "actions.remove")}>
           <Trash2 size={14} aria-hidden="true" />
         </button>
       </div>

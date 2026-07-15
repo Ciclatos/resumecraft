@@ -19,6 +19,7 @@ It keeps the strongest parts of the original prototype as a reusable product: st
 - Typography, line-height and vertical spacing sliders for better A4 fitting.
 - Coordinated visual presets: compact, normal, wide and extra wide.
 - Photo and portfolio QR visibility toggles across templates.
+- Bilingual fixed UI and resume labels in Spanish and English.
 - Ready for Vercel deployment.
 
 ## Routes
@@ -73,14 +74,17 @@ The MVP supports:
 - density: compact, normal and airy
 - show or hide photo
 - show or hide portfolio QR
+- language selection: Español or English
 
 Experience, education and projects can be added, removed and reordered directly in the builder. Skills, tools, focus areas and languages can also be added or deleted from the UI.
 
-The builder stores data in the browser under `resumecraft.builder.v2`. It does not send personal data to a backend.
+Use the language selector near the top of the builder to switch fixed ResumeCraft text between Español and English. The setting updates the builder, live preview and PDF print output. User-written resume content is not automatically translated.
+
+The builder stores data in the browser under `resumecraft.builder.v2`, including the selected language. Existing saved resumes without a language setting continue to open in Spanish by default. It does not send personal data to a backend.
 
 ## Export PDF
 
-Every CV includes a `Descargar PDF` button. It opens the browser print dialog.
+Every CV includes a PDF download button. Its label follows the selected language and opens the browser print dialog.
 
 Recommended settings:
 

@@ -11,15 +11,17 @@ import {
   Wrench,
 } from "lucide-react";
 import type { ResumeData } from "../data/resume";
+import { localizeFixedValue, t, type AppLanguage } from "../data/i18n";
 import { QRCode } from "./QRCode";
 
 type SidebarProps = {
   data: ResumeData;
+  language?: AppLanguage;
   showPhoto?: boolean;
   showQr?: boolean;
 };
 
-export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps) {
+export function Sidebar({ data, language = "es", showPhoto = true, showQr = false }: SidebarProps) {
   const photo = data.photo?.trim();
   const contact = data.contact;
   const portfolioLabel = contact.portfolio.replace(/^https?:\/\//, "");
@@ -37,7 +39,14 @@ export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps
     <aside className="sidebar">
       {showPhoto && photo ? (
         <div className="portrait">
-          <img src={photo} alt={`Foto profesional de ${data.name}`} />
+          <img
+            src={photo}
+            alt={
+              language === "en"
+                ? `Professional photo of ${data.name}`
+                : `Foto profesional de ${data.name}`
+            }
+          />
         </div>
       ) : showPhoto ? (
         <div className="portrait portrait-fallback" aria-hidden="true">
@@ -50,7 +59,7 @@ export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps
         <p>{data.headline}</p>
       </div>
 
-      <SideSection title="Contacto" icon={User}>
+      <SideSection title={t(language, "section.contact")} icon={User}>
         <ul className="contact-list">
           <li>
             <Mail size={14} aria-hidden="true" />
@@ -85,7 +94,7 @@ export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps
         </ul>
       </SideSection>
 
-      <SideSection title="Habilidades" icon={Sparkles}>
+      <SideSection title={t(language, "section.skills")} icon={Sparkles}>
         <ul className="simple-list">
           {data.sections.skills.map((skill) => (
             <li key={skill}>{skill}</li>
@@ -93,7 +102,7 @@ export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps
         </ul>
       </SideSection>
 
-      <SideSection title="Herramientas" icon={Wrench}>
+      <SideSection title={t(language, "section.tools")} icon={Wrench}>
         <ul className="simple-list tool-list">
           {data.sections.tools.map((tool) => (
             <li key={tool}>{tool}</li>
@@ -101,20 +110,20 @@ export function Sidebar({ data, showPhoto = true, showQr = false }: SidebarProps
         </ul>
       </SideSection>
 
-      <SideSection title="Idiomas" icon={Languages}>
+      <SideSection title={t(language, "section.languages")} icon={Languages}>
         <ul className="language-list">
-          {data.sections.languages.map((language) => (
-            <li key={language.name}>
-              <strong>{language.name}</strong>
-              {language.level}
+          {data.sections.languages.map((item) => (
+            <li key={item.name}>
+              <strong>{item.name}</strong>
+              {localizeFixedValue(language, item.level)}
             </li>
           ))}
         </ul>
       </SideSection>
 
       {showQr && contact.portfolio ? (
-        <SideSection title="Portafolio" icon={Globe}>
-          <QRCode value={contact.portfolio} />
+        <SideSection title={t(language, "section.portfolio")} icon={Globe}>
+          <QRCode value={contact.portfolio} language={language} />
         </SideSection>
       ) : null}
     </aside>

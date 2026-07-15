@@ -12,6 +12,7 @@ import type {
   ResumeTemplate,
   TypeScale,
 } from "../data/resume";
+import { localizeFixedValue, t, type AppLanguage } from "../data/i18n";
 
 type ResumeProps = {
   data: ResumeData;
@@ -22,6 +23,7 @@ type ResumeProps = {
   density?: ResumeDensity;
   fontSize?: FontSize;
   fontScale?: number;
+  language?: AppLanguage;
   lineHeightScale?: number;
   spacingScale?: number;
   showDemoLinks?: boolean;
@@ -61,6 +63,7 @@ export function Resume({
   fontSize = "normal",
   fontScale = 100,
   lineHeightScale = 100,
+  language = "es",
   spacingScale = 100,
   showDemoLinks = true,
   showPhoto = true,
@@ -85,7 +88,7 @@ export function Resume({
 
   return (
     <main className="screen-shell">
-      <nav className="toolbar" aria-label="Variantes del CV">
+      <nav className="toolbar" aria-label="ResumeCraft">
         {showDemoLinks
           ? variantLinks.map((link) => (
               <Link key={link.href} href={link.href}>
@@ -94,10 +97,8 @@ export function Resume({
             ))
           : null}
         {actions}
-        <PrintButton />
-        <p className="print-tip">
-          PDF: A4, escala 90-95%, márgenes ninguno, gráficos de fondo activados.
-        </p>
+        <PrintButton language={language} />
+        <p className="print-tip">{t(language, "print.tip")}</p>
       </nav>
 
       {template === "modern-sidebar" ? (
@@ -106,6 +107,7 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          language={language}
           showPhoto={showPhoto}
           showQr={showQr}
           summaryIcon={SummaryIcon}
@@ -117,6 +119,7 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          language={language}
           showPhoto={showPhoto}
           showQr={showQr}
           summaryIcon={SummaryIcon}
@@ -128,6 +131,7 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          language={language}
           showPhoto={showPhoto}
           showQr={showQr}
           summaryIcon={SummaryIcon}
@@ -139,6 +143,7 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          language={language}
           showPhoto={showPhoto}
           showQr={showQr}
           summaryIcon={SummaryIcon}
@@ -150,6 +155,7 @@ export function Resume({
           data={data}
           icons={icons}
           label={label}
+          language={language}
           showPhoto={showPhoto}
           showQr={showQr}
           summaryIcon={SummaryIcon}
@@ -164,6 +170,7 @@ type TemplateProps = {
   className: string;
   data: ResumeData;
   label: string;
+  language: AppLanguage;
   showPhoto?: boolean;
   showQr?: boolean;
   summaryIcon: LucideIcon;
@@ -181,6 +188,7 @@ function ModernSidebarResume({
   data,
   icons,
   label,
+  language,
   showPhoto,
   showQr,
   summaryIcon: SummaryIcon,
@@ -188,10 +196,10 @@ function ModernSidebarResume({
 }: TemplateProps) {
   return (
     <article className={className} style={style}>
-      <Sidebar data={data} showPhoto={showPhoto} showQr={showQr} />
+      <Sidebar data={data} language={language} showPhoto={showPhoto} showQr={showQr} />
       <div className="main">
-        <ResumeIntro data={data} label={label} SummaryIcon={SummaryIcon} />
-        <CoreSections data={data} icons={icons} />
+        <ResumeIntro data={data} label={label} language={language} SummaryIcon={SummaryIcon} />
+        <CoreSections data={data} icons={icons} language={language} />
       </div>
     </article>
   );
@@ -202,6 +210,7 @@ function ProfessionalCorporateResume({
   data,
   icons,
   label,
+  language,
   showPhoto,
   showQr,
   summaryIcon: SummaryIcon,
@@ -212,7 +221,7 @@ function ProfessionalCorporateResume({
       <header className="corporate-header">
         <p className="kicker">{label}</p>
         <div className="template-header-identity">
-          <HeaderPhoto data={data} showPhoto={showPhoto} />
+          <HeaderPhoto data={data} language={language} showPhoto={showPhoto} />
           <div>
             <h1>{data.name}</h1>
             <p>{data.headline}</p>
@@ -222,10 +231,15 @@ function ProfessionalCorporateResume({
       </header>
       <div className="corporate-main">
         <div>
-          <ResumeIntro data={data} label="Professional profile" SummaryIcon={SummaryIcon} />
-          <CoreSections data={data} icons={icons} />
+          <ResumeIntro
+            data={data}
+            label={t(language, "template.label.professionalProfile")}
+            language={language}
+            SummaryIcon={SummaryIcon}
+          />
+          <CoreSections data={data} icons={icons} language={language} />
         </div>
-        <ResumeSidebarLists data={data} showQr={showQr} />
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
@@ -236,6 +250,7 @@ function MinimalCleanResume({
   data,
   icons,
   label,
+  language,
   showPhoto,
   showQr,
   summaryIcon: SummaryIcon,
@@ -246,7 +261,7 @@ function MinimalCleanResume({
       <header className="minimal-header">
         <p className="kicker">{label}</p>
         <div className="template-header-identity">
-          <HeaderPhoto data={data} showPhoto={showPhoto} />
+          <HeaderPhoto data={data} language={language} showPhoto={showPhoto} />
           <div>
             <h1>{data.name}</h1>
             <p>{data.headline}</p>
@@ -255,9 +270,14 @@ function MinimalCleanResume({
         <ContactBar data={data} />
       </header>
       <div className="minimal-main">
-        <ResumeIntro data={data} label="Profile" SummaryIcon={SummaryIcon} />
-        <CoreSections data={data} icons={icons} />
-        <ResumeSidebarLists data={data} showQr={showQr} />
+        <ResumeIntro
+          data={data}
+          label={t(language, "template.label.profile")}
+          language={language}
+          SummaryIcon={SummaryIcon}
+        />
+        <CoreSections data={data} icons={icons} language={language} />
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
@@ -268,6 +288,7 @@ function CreativeTechResume({
   data,
   icons,
   label,
+  language,
   showPhoto,
   showQr,
   summaryIcon: SummaryIcon,
@@ -281,23 +302,28 @@ function CreativeTechResume({
           <h1>{data.name}</h1>
           <p>{data.headline}</p>
         </div>
-        <HeaderPhoto data={data} showPhoto={showPhoto} />
+        <HeaderPhoto data={data} language={language} showPhoto={showPhoto} />
       </header>
       <div className="creative-strip">
         <ContactBar data={data} />
       </div>
       <div className="creative-main">
-        <ResumeIntro data={data} label="Profile" SummaryIcon={SummaryIcon} />
+        <ResumeIntro
+          data={data}
+          label={t(language, "template.label.profile")}
+          language={language}
+          SummaryIcon={SummaryIcon}
+        />
         <section className="creative-highlight">
-          <h2>Core strengths</h2>
-          <div className="focus-list" aria-label="Enfoques principales">
+          <h2>{t(language, "section.coreStrengths")}</h2>
+          <div className="focus-list" aria-label={t(language, "section.focus")}>
             {data.focus.map((item) => (
               <span key={item}>{item}</span>
             ))}
           </div>
         </section>
-        <CoreSections data={data} icons={icons} />
-        <ResumeSidebarLists data={data} showQr={showQr} />
+        <CoreSections data={data} icons={icons} language={language} />
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
@@ -308,6 +334,7 @@ function ATSCleanResume({
   data,
   icons,
   label,
+  language,
   showPhoto,
   showQr,
   summaryIcon: SummaryIcon,
@@ -318,7 +345,7 @@ function ATSCleanResume({
       <header className="ats-header">
         <p className="kicker">{label}</p>
         <div className="template-header-identity">
-          <HeaderPhoto data={data} showPhoto={showPhoto} />
+          <HeaderPhoto data={data} language={language} showPhoto={showPhoto} />
           <div>
             <h1>{data.name}</h1>
             <p>{data.headline}</p>
@@ -327,15 +354,28 @@ function ATSCleanResume({
         <ContactBar data={data} />
       </header>
       <div className="ats-main">
-        <ResumeIntro data={data} label="Professional summary" SummaryIcon={SummaryIcon} />
-        <CoreSections data={data} icons={icons} />
-        <ResumeSidebarLists data={data} showQr={showQr} />
+        <ResumeIntro
+          data={data}
+          label={t(language, "template.label.professionalSummary")}
+          language={language}
+          SummaryIcon={SummaryIcon}
+        />
+        <CoreSections data={data} icons={icons} language={language} />
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
 }
 
-function HeaderPhoto({ data, showPhoto = true }: { data: ResumeData; showPhoto?: boolean }) {
+function HeaderPhoto({
+  data,
+  language,
+  showPhoto = true,
+}: {
+  data: ResumeData;
+  language: AppLanguage;
+  showPhoto?: boolean;
+}) {
   const photo = data.photo?.trim();
 
   if (!showPhoto) {
@@ -352,7 +392,18 @@ function HeaderPhoto({ data, showPhoto = true }: { data: ResumeData; showPhoto?:
 
   return (
     <div className={photo ? "template-header-photo" : "template-header-photo template-header-photo-fallback"}>
-      {photo ? <img src={photo} alt={`Foto profesional de ${data.name}`} /> : initials}
+      {photo ? (
+        <img
+          src={photo}
+          alt={
+            language === "en"
+              ? `Professional photo of ${data.name}`
+              : `Foto profesional de ${data.name}`
+          }
+        />
+      ) : (
+        initials
+      )}
     </div>
   );
 }
@@ -360,10 +411,12 @@ function HeaderPhoto({ data, showPhoto = true }: { data: ResumeData; showPhoto?:
 function ResumeIntro({
   data,
   label,
+  language,
   SummaryIcon,
 }: {
   data: ResumeData;
   label: string;
+  language: AppLanguage;
   SummaryIcon: LucideIcon;
 }) {
   return (
@@ -373,17 +426,17 @@ function ResumeIntro({
         <span className="icon-badge" aria-hidden="true">
           <SummaryIcon size={15} strokeWidth={2.3} />
         </span>
-        <h2>Perfil profesional</h2>
+        <h2>{t(language, "section.profile")}</h2>
       </div>
       <p className="summary">{data.summary}</p>
-      <div className="focus-list" aria-label="Enfoques principales">
+      <div className="focus-list" aria-label={t(language, "section.focus")}>
         {data.focus.map((item) => (
           <span key={item}>{item}</span>
         ))}
       </div>
       {data.sections.additional ? (
         <p className="availability">
-          <strong>Disponibilidad y encaje operativo</strong>
+          <strong>{t(language, "section.availability")}</strong>
           {data.sections.additional}
         </p>
       ) : null}
@@ -394,18 +447,20 @@ function ResumeIntro({
 function CoreSections({
   data,
   icons,
+  language,
 }: {
   data: ResumeData;
   icons: TemplateProps["icons"];
+  language: AppLanguage;
 }) {
   return (
     <>
-      <Section title="Experiencia laboral" icon={icons.experience}>
+      <Section title={t(language, "section.experienceLong")} icon={icons.experience}>
         <div className="timeline">
           {data.sections.experience.map((entry) => (
             <div className="entry" key={`${entry.organization}-${entry.period}-${entry.title}`}>
               <h3>{entry.title}</h3>
-              <time>{entry.period}</time>
+              <time>{localizeFixedValue(language, entry.period)}</time>
               <span className="org">{entry.organization}</span>
               <p>{entry.description}</p>
             </div>
@@ -413,7 +468,7 @@ function CoreSections({
         </div>
       </Section>
 
-      <Section title="Proyectos destacados" icon={icons.projects}>
+      <Section title={t(language, "section.projectsLong")} icon={icons.projects}>
         <div className="project-grid">
           {data.sections.projects.map((project) => (
             <article className="project" key={project.name}>
@@ -424,12 +479,12 @@ function CoreSections({
         </div>
       </Section>
 
-      <Section title="Formación" icon={icons.education}>
+      <Section title={t(language, "section.education")} icon={icons.education}>
         <div className="timeline">
           {data.sections.education.map((entry) => (
             <div className="entry" key={`${entry.degree}-${entry.period}`}>
               <h3>{entry.degree}</h3>
-              <time>{entry.period}</time>
+              <time>{localizeFixedValue(language, entry.period)}</time>
               <span className="org">{entry.institution}</span>
               <p>{entry.detail}</p>
             </div>
@@ -440,25 +495,33 @@ function CoreSections({
   );
 }
 
-function ResumeSidebarLists({ data, showQr = false }: { data: ResumeData; showQr?: boolean }) {
+function ResumeSidebarLists({
+  data,
+  language,
+  showQr = false,
+}: {
+  data: ResumeData;
+  language: AppLanguage;
+  showQr?: boolean;
+}) {
   return (
     <aside className="resume-lists">
-      <ListBlock title="Habilidades" items={data.sections.skills} />
-      <ListBlock title="Herramientas" items={data.sections.tools} compact />
+      <ListBlock title={t(language, "section.skills")} items={data.sections.skills} />
+      <ListBlock title={t(language, "section.tools")} items={data.sections.tools} compact />
       <div className="list-block">
-        <h2>Idiomas</h2>
+        <h2>{t(language, "section.languages")}</h2>
         <ul>
-          {data.sections.languages.map((language) => (
-            <li key={language.name}>
-              <strong>{language.name}</strong> {language.level}
+          {data.sections.languages.map((item) => (
+            <li key={item.name}>
+              <strong>{item.name}</strong> {localizeFixedValue(language, item.level)}
             </li>
           ))}
         </ul>
       </div>
       {showQr && data.contact.portfolio ? (
         <div className="list-block qr-list-block">
-          <h2>Portafolio</h2>
-          <QRCode value={data.contact.portfolio} />
+          <h2>{t(language, "section.portfolio")}</h2>
+          <QRCode value={data.contact.portfolio} language={language} />
         </div>
       ) : null}
     </aside>

@@ -1,3 +1,5 @@
+import type { AppLanguage } from "./i18n";
+
 export type ResumeEntry = {
   title: string;
   organization: string;
@@ -45,6 +47,7 @@ export type ResumeDensity = "compact" | "normal" | "airy";
 export type FontSize = "small" | "normal" | "large";
 
 export type BuilderSettings = {
+  language: AppLanguage;
   template: ResumeTemplate;
   typeScale: TypeScale;
   density: ResumeDensity;
@@ -172,6 +175,7 @@ export const exampleResumeData: ResumeData = {
 };
 
 export const defaultBuilderSettings: BuilderSettings = {
+  language: "es",
   template: "modern-sidebar",
   typeScale: "normal",
   density: "normal",
