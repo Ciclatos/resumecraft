@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   ArrowDown,
   ArrowUp,
+  Database,
   ImagePlus,
   Plus,
   RotateCcw,
@@ -27,6 +28,7 @@ import {
   type TypeScale,
 } from "../data/resume";
 import { languageOptions, t, type AppLanguage, type TranslationKey } from "../data/i18n";
+import { useUserProfile } from "../hooks/useUserProfile";
 
 const storageKey = "resumecraft.builder.v2";
 const maxPhotoBytes = 1.5 * 1024 * 1024;
@@ -176,23 +178,27 @@ export function ResumeBuilder() {
   const [settings, setSettings] = useState<BuilderSettings>(defaultBuilderSettings);
   const [loaded, setLoaded] = useState(false);
   const [photoError, setPhotoError] = useState("");
+  const [profileRevision, setProfileRevision] = useState(0);
   const language = settings.language;
+  const { applyToEmptyFields, clearProfile, hasProfile } = useUserProfile(
+    resume,
+    profileRevision,
+  );
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(storageKey);
-
-    if (saved) {
-      try {
+    try {
+      const saved = window.localStorage.getItem(storageKey);
+      if (saved) {
         const parsed = JSON.parse(saved) as {
           resume?: ResumeData;
           settings?: BuilderSettings;
         };
         setResume(parsed.resume ?? exampleResumeData);
         setSettings({ ...defaultBuilderSettings, ...parsed.settings });
-      } catch {
-        setResume(exampleResumeData);
-        setSettings(defaultBuilderSettings);
       }
+    } catch {
+      setResume(exampleResumeData);
+      setSettings(defaultBuilderSettings);
     }
 
     setLoaded(true);
@@ -216,11 +222,17 @@ export function ResumeBuilder() {
     setResume((current) => ({ ...current, ...next }));
   }
 
+  function updateProfileData(next: Partial<ResumeData>) {
+    update(next);
+    setProfileRevision((current) => current + 1);
+  }
+
   function updateContact(field: keyof ResumeData["contact"], value: string) {
     setResume((current) => ({
       ...current,
       contact: { ...current.contact, [field]: value },
     }));
+    setProfileRevision((current) => current + 1);
   }
 
   function updateSettings(next: Partial<BuilderSettings>) {
@@ -235,10 +247,18 @@ export function ResumeBuilder() {
   }
 
   function resetData() {
-    setResume(emptyResumeData);
+    setResume(applyToEmptyFields(emptyResumeData));
     setSettings((current) => ({ ...defaultBuilderSettings, language: current.language }));
     setPhotoError("");
-    window.localStorage.removeItem(storageKey);
+    try {
+      window.localStorage.removeItem(storageKey);
+    } catch {
+      // Keep the editor usable when browser storage is unavailable.
+    }
+  }
+
+  function handleClearProfile() {
+    if (window.confirm(t(language, "profile.clearConfirm"))) clearProfile();
   }
 
   function loadExample() {
@@ -286,7 +306,7 @@ export function ResumeBuilder() {
         return;
       }
 
-      update({ photo });
+      updateProfileData({ photo });
     } catch {
       setPhotoError(
         language === "en"
@@ -411,13 +431,16 @@ export function ResumeBuilder() {
           <section className="editor-section">
             <h2>{t(language, "settings.mainData")}</h2>
             <Field label={t(language, "field.name")}>
-              <input value={resume.name} onChange={(event) => update({ name: event.target.value })} />
+              <input
+                value={resume.name}
+                onChange={(event) => updateProfileData({ name: event.target.value })}
+              />
             </Field>
 
             <Field label={t(language, "field.headline")}>
               <input
                 value={resume.headline}
-                onChange={(event) => update({ headline: event.target.value })}
+                onChange={(event) => updateProfileData({ headline: event.target.value })}
               />
             </Field>
 
@@ -426,7 +449,7 @@ export function ResumeBuilder() {
               photo={resume.photo ?? ""}
               error={photoError}
               onFile={handlePhoto}
-              onClear={() => update({ photo: "" })}
+              onClear={() => updateProfileData({ photo: "" })}
             />
 
             <div className="field-grid">
@@ -472,6 +495,17 @@ export function ResumeBuilder() {
                   onChange={(event) => updateContact("github", event.target.value)}
                 />
               </Field>
+            </div>
+
+            <div className="profile-storage-note">
+              <Database size={18} aria-hidden="true" />
+              <div>
+                <strong>{t(language, "profile.localTitle")}</strong>
+                <p>{t(language, "profile.localDescription")}</p>
+              </div>
+              <button type="button" disabled={!hasProfile} onClick={handleClearProfile}>
+                {t(language, "profile.clear")}
+              </button>
             </div>
 
             <Field label={t(language, "field.summary")}>

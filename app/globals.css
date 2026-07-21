@@ -433,6 +433,45 @@ a {
   cursor: pointer;
 }
 
+.profile-storage-note {
+  align-items: start;
+  background: var(--craft-soft);
+  border: 1px solid #bce5dc;
+  border-radius: 8px;
+  color: var(--craft);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr;
+  padding: 12px;
+}
+
+.profile-storage-note div {
+  display: grid;
+  gap: 4px;
+}
+
+.profile-storage-note strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.profile-storage-note button {
+  background: transparent;
+  border: 0;
+  color: var(--craft);
+  cursor: pointer;
+  font: 800 12px/1.2 Arial, Helvetica, sans-serif;
+  grid-column: 2;
+  justify-self: start;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.profile-storage-note button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
 .builder-preview .screen-shell {
   padding: 0;
 }
