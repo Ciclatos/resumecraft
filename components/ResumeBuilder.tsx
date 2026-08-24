@@ -4,14 +4,19 @@ import Link from "next/link";
 import {
   ArrowDown,
   ArrowUp,
+  Copy,
   Database,
+  Download,
+  FilePlus2,
+  FileUp,
   ImagePlus,
+  Pencil,
   Plus,
   RotateCcw,
   Trash2,
   Wand2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Resume } from "./Resume";
 import {
   defaultBuilderSettings,
@@ -29,35 +34,18 @@ import {
 } from "../data/resume";
 import { languageOptions, t, type AppLanguage, type TranslationKey } from "../data/i18n";
 import { useUserProfile } from "../hooks/useUserProfile";
+import {
+  createEmptyResumeData,
+  exportResume,
+  ResumeRepository,
+  ResumeStorageError,
+  type SavedResume,
+} from "../lib/resumeRepository";
 
-const storageKey = "resumecraft.builder.v2";
+const saveDelayMs = 400;
 const maxPhotoBytes = 1.5 * 1024 * 1024;
 const maxProcessedPhotoBytes = 850 * 1024;
 const acceptedPhotoTypes = ["image/jpeg", "image/png", "image/webp"];
-
-const emptyResumeData: ResumeData = {
-  name: "",
-  photo: "",
-  headline: "",
-  contact: {
-    email: "",
-    phone: "",
-    location: "",
-    portfolio: "",
-    linkedIn: "",
-    github: "",
-  },
-  summary: "",
-  focus: [],
-  sections: {
-    experience: [],
-    projects: [],
-    education: [],
-    skills: [],
-    tools: [],
-    languages: [],
-  },
-};
 
 const templateOptions: Array<{
   id: ResumeTemplate;
@@ -176,9 +164,25 @@ const visualPresets = [
 export function ResumeBuilder() {
   const [resume, setResume] = useState<ResumeData>(exampleResumeData);
   const [settings, setSettings] = useState<BuilderSettings>(defaultBuilderSettings);
+  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
+  const [activeResumeId, setActiveResumeId] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [photoError, setPhotoError] = useState("");
+  const [storageMessage, setStorageMessage] = useState("");
+  const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [profileRevision, setProfileRevision] = useState(0);
+  const repositoryRef = useRef<ResumeRepository | null>(null);
+  const resumeRef = useRef(resume);
+  const settingsRef = useRef(settings);
+  const activeIdRef = useRef(activeResumeId);
+  const lastSavedContentRef = useRef("");
+  const saveCurrentResumeRef = useRef<() => boolean>(() => true);
+  resumeRef.current = resume;
+  settingsRef.current = settings;
+  activeIdRef.current = activeResumeId;
   const language = settings.language;
   const { applyToEmptyFields, clearProfile, hasProfile } = useUserProfile(
     resume,
@@ -187,36 +191,178 @@ export function ResumeBuilder() {
 
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem(storageKey);
-      if (saved) {
-        const parsed = JSON.parse(saved) as {
-          resume?: ResumeData;
-          settings?: BuilderSettings;
-        };
-        setResume(parsed.resume ?? exampleResumeData);
-        setSettings({ ...defaultBuilderSettings, ...parsed.settings });
-      }
-    } catch {
-      setResume(exampleResumeData);
-      setSettings(defaultBuilderSettings);
+      const repository = new ResumeRepository(window.localStorage);
+      const library = repository.getLibrary();
+      const active = library.resumes.find((item) => item.id === library.activeResumeId) ?? library.resumes[0];
+      repositoryRef.current = repository;
+      setSavedResumes(library.resumes);
+      setActiveResumeId(active.id);
+      setResume(active.data.resume);
+      setSettings(active.data.settings);
+      lastSavedContentRef.current = JSON.stringify(active.data);
+    } catch (error) {
+      console.error(error);
+      setStorageMessage("No se pudo acceder al almacenamiento local. Puedes editar, pero los cambios podrían no persistir.");
     }
 
     setLoaded(true);
   }, []);
 
   useEffect(() => {
-    if (loaded) {
-      try {
-        window.localStorage.setItem(storageKey, JSON.stringify({ resume, settings }));
-      } catch {
-        setPhotoError(
-          language === "en"
-            ? "Could not save locally. Try a lighter photo or remove the current photo."
-            : "No se pudo guardar localmente. Prueba con una foto más ligera o quita la foto actual.",
-        );
-      }
+    if (!loaded || !activeResumeId || !repositoryRef.current) return;
+    setSaveState("saving");
+    const timeout = window.setTimeout(() => saveCurrentResumeRef.current(), saveDelayMs);
+    return () => window.clearTimeout(timeout);
+  }, [activeResumeId, loaded, resume, settings]);
+
+  useEffect(() => {
+    const saveBeforeLeaving = () => saveCurrentResumeRef.current();
+    window.addEventListener("beforeunload", saveBeforeLeaving);
+    return () => window.removeEventListener("beforeunload", saveBeforeLeaving);
+  }, []);
+
+  function saveCurrentResume() {
+    const repository = repositoryRef.current;
+    const id = activeIdRef.current;
+    if (!repository || !id) return true;
+    const content = { resume: resumeRef.current, settings: settingsRef.current };
+    const serialized = JSON.stringify(content);
+    if (serialized === lastSavedContentRef.current) {
+      setSaveState("saved");
+      return true;
     }
-  }, [language, loaded, resume, settings]);
+    try {
+      const updated = repository.updateResume(id, content);
+      lastSavedContentRef.current = serialized;
+      setSavedResumes((items) => items.map((item) => item.id === id ? updated : item));
+      setSaveState("saved");
+      return true;
+    } catch (error) {
+      console.error(error);
+      setSaveState("error");
+      setStorageMessage(language === "en" ? "Changes could not be saved locally. Try removing a large photo." : "No se pudieron guardar los cambios. Prueba quitando una foto pesada.");
+      return false;
+    }
+  }
+  saveCurrentResumeRef.current = saveCurrentResume;
+
+  function openResume(id: string) {
+    if (id === activeIdRef.current || !saveCurrentResume()) return;
+    const repository = repositoryRef.current;
+    const next = repository?.getResumeById(id);
+    if (!repository || !next) return;
+    repository.setActiveResume(id);
+    setActiveResumeId(id);
+    setResume(next.data.resume);
+    setSettings(next.data.settings);
+    lastSavedContentRef.current = JSON.stringify(next.data);
+    setPhotoError("");
+  }
+
+  function createResume() {
+    if (!saveCurrentResume() || !repositoryRef.current) return;
+    try {
+      const created = repositoryRef.current.createResume(language === "en" ? "New Resume" : "Nuevo CV", {
+        resume: applyToEmptyFields(createEmptyResumeData()),
+        settings: { ...defaultBuilderSettings, language },
+      });
+      setSavedResumes(repositoryRef.current.getAllResumes());
+      setActiveResumeId(created.id);
+      setResume(created.data.resume);
+      setSettings(created.data.settings);
+      lastSavedContentRef.current = JSON.stringify(created.data);
+    } catch (error) {
+      handleStorageError(error);
+    }
+  }
+
+  function duplicateCurrent() {
+    if (!saveCurrentResume() || !repositoryRef.current) return;
+    try {
+      const duplicate = repositoryRef.current.duplicateResume(activeIdRef.current);
+      setSavedResumes(repositoryRef.current.getAllResumes());
+      setActiveResumeId(duplicate.id);
+      setResume(duplicate.data.resume);
+      setSettings(duplicate.data.settings);
+      lastSavedContentRef.current = JSON.stringify(duplicate.data);
+    } catch (error) {
+      handleStorageError(error);
+    }
+  }
+
+  function renameCurrent() {
+    const current = savedResumes.find((item) => item.id === activeResumeId);
+    if (!current || !repositoryRef.current) return;
+    setRenameValue(current.name);
+    setRenameOpen(true);
+  }
+
+  function confirmRename() {
+    const current = savedResumes.find((item) => item.id === activeResumeId);
+    if (!current || !repositoryRef.current || !renameValue.trim()) return;
+    try {
+      const updated = repositoryRef.current.renameResume(current.id, renameValue);
+      setSavedResumes((items) => items.map((item) => item.id === current.id ? updated : item));
+      setRenameOpen(false);
+    } catch (error) {
+      handleStorageError(error);
+    }
+  }
+
+  function deleteCurrent() {
+    setDeleteOpen(true);
+  }
+
+  function confirmDelete() {
+    const current = savedResumes.find((item) => item.id === activeResumeId);
+    if (!current || !repositoryRef.current) return;
+    try {
+      const library = repositoryRef.current.deleteResume(current.id);
+      const next = library.resumes.find((item) => item.id === library.activeResumeId) ?? library.resumes[0];
+      setSavedResumes(library.resumes);
+      setActiveResumeId(next.id);
+      setResume(next.data.resume);
+      setSettings(next.data.settings);
+      lastSavedContentRef.current = JSON.stringify(next.data);
+      setDeleteOpen(false);
+    } catch (error) {
+      handleStorageError(error);
+    }
+  }
+
+  function downloadCurrentJson() {
+    const current = savedResumes.find((item) => item.id === activeResumeId);
+    if (!current || !saveCurrentResume()) return;
+    const blob = new Blob([exportResume({ ...current, data: { resume: resumeRef.current, settings: settingsRef.current } })], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${safeFileName(current.name)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function importResumeFile(file: File | undefined) {
+    if (!file || !repositoryRef.current || !saveCurrentResume()) return;
+    try {
+      const value: unknown = JSON.parse(await file.text());
+      const imported = repositoryRef.current.importResume(value);
+      setSavedResumes(repositoryRef.current.getAllResumes());
+      setActiveResumeId(imported.id);
+      setResume(imported.data.resume);
+      setSettings(imported.data.settings);
+      lastSavedContentRef.current = JSON.stringify(imported.data);
+      setStorageMessage(language === "en" ? "Resume imported successfully." : "CV importado correctamente.");
+    } catch (error) {
+      console.error(error);
+      setStorageMessage(language === "en" ? "That file is not a valid ResumeCraft resume." : "Ese archivo no es un CV válido de ResumeCraft.");
+    }
+  }
+
+  function handleStorageError(error: unknown) {
+    console.error(error);
+    setStorageMessage(error instanceof ResumeStorageError ? error.message : (language === "en" ? "The action could not be completed." : "No se pudo completar la acción."));
+  }
 
   function update(next: Partial<ResumeData>) {
     setResume((current) => ({ ...current, ...next }));
@@ -247,14 +393,9 @@ export function ResumeBuilder() {
   }
 
   function resetData() {
-    setResume(applyToEmptyFields(emptyResumeData));
+    setResume(applyToEmptyFields(createEmptyResumeData()));
     setSettings((current) => ({ ...defaultBuilderSettings, language: current.language }));
     setPhotoError("");
-    try {
-      window.localStorage.removeItem(storageKey);
-    } catch {
-      // Keep the editor usable when browser storage is unavailable.
-    }
   }
 
   function handleClearProfile() {
@@ -327,6 +468,51 @@ export function ResumeBuilder() {
           <a href="https://github.com/Ciclatos/resumecraft">GitHub</a>
         </div>
       </header>
+
+      <ResumeManager
+        activeResumeId={activeResumeId}
+        language={language}
+        resumes={savedResumes}
+        saveState={saveState}
+        message={storageMessage}
+        onClearMessage={() => setStorageMessage("")}
+        onCreate={createResume}
+        onDelete={deleteCurrent}
+        onDuplicate={duplicateCurrent}
+        onExport={downloadCurrentJson}
+        onImport={importResumeFile}
+        onOpen={openResume}
+        onRename={renameCurrent}
+      />
+      {renameOpen ? (
+        <ResumeDialog
+          title={language === "en" ? "Rename resume" : "Renombrar CV"}
+          onClose={() => setRenameOpen(false)}
+        >
+          <form onSubmit={(event) => { event.preventDefault(); confirmRename(); }}>
+            <label className="dialog-field">
+              <span>{language === "en" ? "Resume name" : "Nombre del CV"}</span>
+              <input autoFocus maxLength={120} value={renameValue} onChange={(event) => setRenameValue(event.target.value)} />
+            </label>
+            <div className="dialog-actions">
+              <button type="button" onClick={() => setRenameOpen(false)}>{language === "en" ? "Cancel" : "Cancelar"}</button>
+              <button className="primary-dialog-action" type="submit" disabled={!renameValue.trim()}>{language === "en" ? "Save name" : "Guardar nombre"}</button>
+            </div>
+          </form>
+        </ResumeDialog>
+      ) : null}
+      {deleteOpen ? (
+        <ResumeDialog
+          title={language === "en" ? "Delete resume?" : "¿Eliminar CV?"}
+          onClose={() => setDeleteOpen(false)}
+        >
+          <p>{language === "en" ? "This resume will be permanently deleted. This action cannot be undone." : "Este CV se eliminará permanentemente. Esta acción no se puede deshacer."}</p>
+          <div className="dialog-actions">
+            <button autoFocus type="button" onClick={() => setDeleteOpen(false)}>{language === "en" ? "Cancel" : "Cancelar"}</button>
+            <button className="danger-dialog-action" type="button" onClick={confirmDelete}>{language === "en" ? "Delete resume" : "Eliminar CV"}</button>
+          </div>
+        </ResumeDialog>
+      ) : null}
 
       <div className="builder-workspace">
         <form className="builder-panel" aria-label={t(language, "builder.aria")}>
@@ -609,6 +795,113 @@ export function ResumeBuilder() {
       </div>
     </div>
   );
+}
+
+function ResumeDialog({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+  const dialogRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>("button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])"));
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
+    <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section ref={dialogRef} className="resume-dialog" role="dialog" aria-modal="true" aria-labelledby="resume-dialog-title">
+        <h2 id="resume-dialog-title">{title}</h2>
+        {children}
+      </section>
+    </div>
+  );
+}
+
+function ResumeManager({
+  activeResumeId,
+  language,
+  resumes,
+  saveState,
+  message,
+  onClearMessage,
+  onCreate,
+  onDelete,
+  onDuplicate,
+  onExport,
+  onImport,
+  onOpen,
+  onRename,
+}: {
+  activeResumeId: string;
+  language: AppLanguage;
+  resumes: SavedResume[];
+  saveState: "saved" | "saving" | "error";
+  message: string;
+  onClearMessage: () => void;
+  onCreate: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onExport: () => void;
+  onImport: (file: File | undefined) => void;
+  onOpen: (id: string) => void;
+  onRename: () => void;
+}) {
+  const saveLabel = saveState === "saving"
+    ? (language === "en" ? "Saving…" : "Guardando…")
+    : saveState === "error"
+      ? (language === "en" ? "Save failed" : "Error al guardar")
+      : (language === "en" ? "Saved locally" : "Guardado localmente");
+
+  return (
+    <section className="resume-manager" aria-label={language === "en" ? "My resumes" : "Mis CVs"}>
+      <div className="resume-switcher">
+        <label htmlFor="resume-switcher">{language === "en" ? "My resumes" : "Mis CVs"}</label>
+        <select
+          id="resume-switcher"
+          value={activeResumeId}
+          onChange={(event) => onOpen(event.target.value)}
+        >
+          {resumes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        </select>
+        <span className={`save-state save-state-${saveState}`} aria-live="polite">{saveLabel}</span>
+      </div>
+      <div className="resume-manager-actions">
+        <button type="button" onClick={onCreate}><FilePlus2 size={17} aria-hidden="true" />{language === "en" ? "New" : "Nuevo"}</button>
+        <button type="button" onClick={onRename}><Pencil size={16} aria-hidden="true" />{language === "en" ? "Rename" : "Renombrar"}</button>
+        <button type="button" onClick={onDuplicate}><Copy size={16} aria-hidden="true" />{language === "en" ? "Duplicate" : "Duplicar"}</button>
+        <button type="button" onClick={onExport}><Download size={16} aria-hidden="true" />{language === "en" ? "Export" : "Exportar"}</button>
+        <label className="resume-import-button">
+          <FileUp size={16} aria-hidden="true" />{language === "en" ? "Import" : "Importar"}
+          <input
+            accept="application/json,.json"
+            type="file"
+            onChange={(event) => {
+              void onImport(event.target.files?.[0]);
+              event.currentTarget.value = "";
+            }}
+          />
+        </label>
+        <button className="danger-button" type="button" onClick={onDelete}><Trash2 size={16} aria-hidden="true" />{language === "en" ? "Delete" : "Eliminar"}</button>
+      </div>
+      {message ? (
+        <div className="resume-manager-message" role="status">
+          <span>{message}</span>
+          <button type="button" aria-label={language === "en" ? "Dismiss message" : "Cerrar mensaje"} onClick={onClearMessage}>×</button>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function safeFileName(value: string) {
+  return value.trim().replace(/[^a-z0-9áéíóúüñ_-]+/gi, "-").replace(/^-+|-+$/g, "") || "resume";
 }
 
 function TemplateSelector({

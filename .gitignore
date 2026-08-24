@@ -6,6 +6,7 @@ dist
 .vercel
 tmp
 *.log
+*.tsbuildinfo
 .env*
 !/.env.example
 ._*

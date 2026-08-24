@@ -32,6 +32,7 @@
 
   .home-nav,
   .builder-header,
+  .resume-manager,
   .builder-panel {
     display: none !important;
   }

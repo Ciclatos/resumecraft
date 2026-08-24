@@ -7,6 +7,8 @@ It keeps the strongest parts of the original prototype as a reusable product: st
 ## Features
 
 - Editable resume builder at `/builder`.
+- Multiple independent local resumes with create, rename, duplicate, switch and delete actions.
+- Per-resume JSON export and validated import.
 - Five selectable templates: Modern Sidebar, Professional Corporate, Minimal Clean, Creative Tech and ATS Clean.
 - Real-time preview while editing.
 - PDF export through the browser print dialog.
@@ -80,7 +82,7 @@ Experience, education and projects can be added, removed and reordered directly 
 
 Use the language selector near the top of the builder to switch fixed ResumeCraft text between Español and English. The setting updates the builder, live preview and PDF print output. User-written resume content is not automatically translated.
 
-The builder stores data in the browser under `resumecraft.builder.v2`, including the selected language. Existing saved resumes without a language setting continue to open in Spanish by default. It does not send personal data to a backend.
+The builder stores a versioned resume library in the browser under `resumecraft.resumes.v3`. Each saved resume contains its complete editor data and visual settings; generated PDFs are never persisted. Existing single-resume data from `resumecraft.builder.v2` is migrated automatically into the first saved resume while the legacy key is retained as a fallback. Existing saved resumes without a language setting continue to open in Spanish by default. ResumeCraft does not send personal data to a backend.
 
 ## Export PDF
 
