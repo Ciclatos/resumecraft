@@ -28,11 +28,6 @@ import {
   type ResumeEducation,
   type ResumeEntry,
   type ResumeLanguage,
-  type ResumeContactItem,
-  type ResumeExtraSection,
-  type ResumeIconName,
-  type ResumeSectionConfig,
-  type ResumeSectionKind,
   type ResumeProject,
   type ResumeTemplate,
   type TypeScale,
@@ -378,31 +373,12 @@ export function ResumeBuilder() {
     setProfileRevision((current) => current + 1);
   }
 
-  function updateContact(field: Exclude<keyof ResumeData["contact"], "items">, value: string) {
+  function updateContact(field: keyof ResumeData["contact"], value: string) {
     setResume((current) => ({
       ...current,
       contact: { ...current.contact, [field]: value },
     }));
     setProfileRevision((current) => current + 1);
-  }
-
-  function updateContactItems(items: ResumeContactItem[]) {
-    setResume((current) => ({ ...current, contact: { ...current.contact, items } }));
-    setProfileRevision((current) => current + 1);
-  }
-
-  function updateSectionConfig(sectionConfig: ResumeSectionConfig[]) {
-    setResume((current) => ({ ...current, sectionConfig }));
-  }
-
-  function addExtraSection(kind: ResumeSectionKind, title: string, icon: ResumeIconName) {
-    const id = `custom-${Date.now().toString(36)}`;
-    const extra: ResumeExtraSection = { id, kind, title, icon, enabled: true, items: [], text: "" };
-    setResume((current) => ({ ...current, sectionConfig: [...(current.sectionConfig ?? []), extra], extraSections: [...(current.extraSections ?? []), extra] }));
-  }
-
-  function updateExtraSection(extra: ResumeExtraSection) {
-    setResume((current) => ({ ...current, extraSections: (current.extraSections ?? []).map((item) => item.id === extra.id ? extra : item) }));
   }
 
   function updateSettings(next: Partial<BuilderSettings>) {
@@ -678,8 +654,6 @@ export function ResumeBuilder() {
               </Field>
             </div>
 
-            <ContactItemsEditor language={language} items={resume.contact.items ?? []} onChange={updateContactItems} />
-
             <Field label={t(language, "field.location")}>
               <input
                 value={resume.contact.location}
@@ -737,13 +711,6 @@ export function ResumeBuilder() {
             onChange={(focus) => update({ focus })}
           />
 
-          <SectionManager
-            language={language}
-            sections={resume.sectionConfig ?? []}
-            onChange={updateSectionConfig}
-            onAdd={addExtraSection}
-          />
-
           <ExperienceEditor
             language={language}
             items={resume.sections.experience}
@@ -783,10 +750,6 @@ export function ResumeBuilder() {
             items={resume.sections.languages}
             onChange={(languages) => updateSections({ languages })}
           />
-
-          {(resume.extraSections ?? []).map((section) => (
-            <ExtraSectionEditor key={section.id} language={language} section={section} onChange={updateExtraSection} />
-          ))}
 
           <div className="builder-actions">
             <button type="button" onClick={loadExample}>
@@ -1159,36 +1122,6 @@ async function fileToOptimizedDataUrl(file: File) {
   context.drawImage(image, 0, 0, width, height);
 
   return canvas.toDataURL("image/jpeg", 0.86);
-}
-
-const sectionPresets: Array<{ kind: ResumeSectionKind; title: string; icon: ResumeIconName }> = [
-  { kind: "credentials", title: "Certifications", icon: "certificate" },
-  { kind: "credentials", title: "Courses / Continuing Education", icon: "book" },
-  { kind: "list", title: "Professional Memberships", icon: "users" },
-  { kind: "timeline", title: "Publications", icon: "book" },
-  { kind: "credentials", title: "Awards", icon: "award" },
-  { kind: "references", title: "References", icon: "users" },
-  { kind: "timeline", title: "Volunteer Experience", icon: "heart" },
-  { kind: "text", title: "Additional Information", icon: "info" },
-  { kind: "list", title: "Custom Section", icon: "sparkles" },
-];
-
-const iconOptions: ResumeIconName[] = ["user", "briefcase", "graduation", "folder", "sparkles", "wrench", "languages", "award", "book", "users", "heart", "info", "stethoscope", "certificate"];
-
-function SectionManager({ language, sections, onChange, onAdd }: { language: AppLanguage; sections: ResumeSectionConfig[]; onChange: (items: ResumeSectionConfig[]) => void; onAdd: (kind: ResumeSectionKind, title: string, icon: ResumeIconName) => void }) {
-  const [preset, setPreset] = useState(0);
-  const label = language === "en" ? "Section manager" : "Administrador de secciones";
-  return <section className="editor-section section-manager"><h2>{label}</h2><p>{language === "en" ? "Show, reorder, rename, and choose an icon for every section." : "Muestra, reordena, renombra y elige un icono para cada sección."}</p><div className="item-stack">{sections.map((section, index) => <div className="section-manager-row" key={section.id}><input aria-label={language === "en" ? "Section title" : "Título de sección"} value={section.title} onChange={(event) => onChange(sections.map((item) => item.id === section.id ? { ...item, title: event.target.value } : item))} /><select aria-label={language === "en" ? "Section icon" : "Icono de sección"} value={section.icon} onChange={(event) => onChange(sections.map((item) => item.id === section.id ? { ...item, icon: event.target.value as ResumeIconName } : item))}>{iconOptions.map((icon) => <option key={icon} value={icon}>{icon}</option>)}</select><label className="compact-toggle"><input type="checkbox" checked={section.enabled} onChange={(event) => onChange(sections.map((item) => item.id === section.id ? { ...item, enabled: event.target.checked } : item))} />{language === "en" ? "Show" : "Mostrar"}</label><div className="card-actions"><button type="button" disabled={index === 0} onClick={() => moveItem(sections, index, -1, onChange)} aria-label="Move up"><ArrowUp size={15} /></button><button type="button" disabled={index === sections.length - 1} onClick={() => moveItem(sections, index, 1, onChange)} aria-label="Move down"><ArrowDown size={15} /></button></div></div>)}</div><div className="section-add-row"><select value={preset} onChange={(event) => setPreset(Number(event.target.value))}>{sectionPresets.map((item, index) => <option key={`${item.title}-${index}`} value={index}>{item.title}</option>)}</select><AddButton label={language === "en" ? "Add section" : "Agregar sección"} onClick={() => { const item = sectionPresets[preset]; onAdd(item.kind, item.title, item.icon); }} /></div></section>;
-}
-
-function ContactItemsEditor({ language, items, onChange }: { language: AppLanguage; items: ResumeContactItem[]; onChange: (items: ResumeContactItem[]) => void }) {
-  return <div className="contact-items-editor"><h3>{language === "en" ? "Flexible contact details" : "Datos de contacto flexibles"}</h3>{items.map((item, index) => <div className="contact-item-row" key={item.id}><input placeholder={language === "en" ? "Label" : "Etiqueta"} value={item.label} onChange={(event) => onChange(items.map((x) => x.id === item.id ? { ...x, label: event.target.value } : x))} /><input placeholder={language === "en" ? "Value" : "Valor"} value={item.value} onChange={(event) => onChange(items.map((x) => x.id === item.id ? { ...x, value: event.target.value } : x))} /><input placeholder="URL (optional)" value={item.url ?? ""} onChange={(event) => onChange(items.map((x) => x.id === item.id ? { ...x, url: event.target.value } : x))} /><select aria-label={language === "en" ? "Contact icon" : "Icono de contacto"} value={item.icon} onChange={(event) => onChange(items.map((x) => x.id === item.id ? { ...x, icon: event.target.value as ResumeIconName } : x))}>{iconOptions.map((icon) => <option key={icon} value={icon}>{icon}</option>)}</select><label className="compact-toggle"><input type="checkbox" checked={item.enabled} onChange={(event) => onChange(items.map((x) => x.id === item.id ? { ...x, enabled: event.target.checked } : x))} />{language === "en" ? "Show" : "Mostrar"}</label><IconButton label={t(language, "actions.remove")} onClick={() => removeItem(items, index, onChange)} /></div>)}<AddButton label={language === "en" ? "Add contact detail" : "Agregar dato de contacto"} onClick={() => onChange([...items, { id: `contact-${Date.now().toString(36)}`, label: "", value: "", url: "", icon: "info", enabled: true }])} /></div>;
-}
-
-function ExtraSectionEditor({ language, section, onChange }: { language: AppLanguage; section: ResumeExtraSection; onChange: (section: ResumeExtraSection) => void }) {
-  if (section.kind === "text") return <section className="editor-section"><h2>{section.title}</h2><textarea rows={4} value={section.text ?? ""} onChange={(event) => onChange({ ...section, text: event.target.value })} /></section>;
-  const listOnly = section.kind === "list";
-  return <section className="editor-section"><h2>{section.title}</h2><div className="item-stack">{section.items.map((item, index) => <EditorCard key={`${section.id}-${index}`} index={index} total={section.items.length} language={language} onMove={(direction) => moveItem(section.items, index, direction, (items) => onChange({ ...section, items }))} onRemove={() => removeItem(section.items, index, (items) => onChange({ ...section, items }))}><Field label={listOnly ? (language === "en" ? "Item" : "Elemento") : t(language, "field.title")}><input value={item.title} onChange={(event) => onChange({ ...section, items: section.items.map((x, i) => i === index ? { ...x, title: event.target.value } : x) })} /></Field>{!listOnly ? <><Field label={language === "en" ? "Institution / organization" : "Institución / organización"}><input value={item.subtitle} onChange={(event) => onChange({ ...section, items: section.items.map((x, i) => i === index ? { ...x, subtitle: event.target.value } : x) })} /></Field><Field label={t(language, "field.period")}><input value={item.period} onChange={(event) => onChange({ ...section, items: section.items.map((x, i) => i === index ? { ...x, period: event.target.value } : x) })} /></Field><Field label={t(language, "field.description")}><textarea rows={3} value={item.description} onChange={(event) => onChange({ ...section, items: section.items.map((x, i) => i === index ? { ...x, description: event.target.value } : x) })} /></Field></> : null}</EditorCard>)}</div><AddButton label={language === "en" ? "Add entry" : "Agregar entrada"} onClick={() => onChange({ ...section, items: [...section.items, { title: "", subtitle: "", period: "", description: "" }] })} /></section>;
 }
 
 function TextListEditor({

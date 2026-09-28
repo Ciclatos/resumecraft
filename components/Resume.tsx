@@ -1,17 +1,15 @@
 import Link from "next/link";
-import { Award, BookOpen, Bot, BriefcaseBusiness, Code2, FileBadge, Folder, GraduationCap, HeartHandshake, Info, Languages, Sparkles, Stethoscope, User, Users, Wrench } from "lucide-react";
+import { Bot, BriefcaseBusiness, Code2, GraduationCap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Section } from "./Section";
 import { Sidebar } from "./Sidebar";
 import { PrintButton } from "./PrintButton";
 import { QRCode } from "./QRCode";
-import { defaultSectionConfig, type
+import type {
   FontSize,
   ResumeData,
   ResumeDensity,
   ResumeTemplate,
-  ResumeIconName,
-  ResumeSectionConfig,
   TypeScale,
 } from "../data/resume";
 import { localizeFixedValue, t, type AppLanguage } from "../data/i18n";
@@ -53,12 +51,6 @@ const defaultIcons = {
   experience: BriefcaseBusiness,
   projects: Code2,
   education: GraduationCap,
-};
-
-const iconMap: Record<ResumeIconName, LucideIcon> = {
-  user: User, briefcase: BriefcaseBusiness, graduation: GraduationCap, folder: Folder,
-  sparkles: Sparkles, wrench: Wrench, languages: Languages, award: Award, book: BookOpen,
-  users: Users, heart: HeartHandshake, info: Info, stethoscope: Stethoscope, certificate: FileBadge,
 };
 
 export function Resume({
@@ -206,7 +198,8 @@ function ModernSidebarResume({
     <article className={className} style={style}>
       <Sidebar data={data} language={language} showPhoto={showPhoto} showQr={showQr} />
       <div className="main">
-        <ModularSections data={data} language={language} fallbackSummaryIcon={SummaryIcon} legacyIcons={icons} />
+        <ResumeIntro data={data} label={label} language={language} SummaryIcon={SummaryIcon} />
+        <CoreSections data={data} icons={icons} language={language} />
       </div>
     </article>
   );
@@ -238,9 +231,15 @@ function ProfessionalCorporateResume({
       </header>
       <div className="corporate-main">
         <div>
-          <ModularSections data={data} language={language} fallbackSummaryIcon={SummaryIcon} legacyIcons={icons} />
-          <PortfolioQr data={data} language={language} show={showQr} />
+          <ResumeIntro
+            data={data}
+            label={t(language, "template.label.professionalProfile")}
+            language={language}
+            SummaryIcon={SummaryIcon}
+          />
+          <CoreSections data={data} icons={icons} language={language} />
         </div>
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
@@ -271,8 +270,14 @@ function MinimalCleanResume({
         <ContactBar data={data} />
       </header>
       <div className="minimal-main">
-        <ModularSections data={data} language={language} fallbackSummaryIcon={SummaryIcon} legacyIcons={icons} />
-        <PortfolioQr data={data} language={language} show={showQr} />
+        <ResumeIntro
+          data={data}
+          label={t(language, "template.label.profile")}
+          language={language}
+          SummaryIcon={SummaryIcon}
+        />
+        <CoreSections data={data} icons={icons} language={language} />
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
@@ -303,6 +308,12 @@ function CreativeTechResume({
         <ContactBar data={data} />
       </div>
       <div className="creative-main">
+        <ResumeIntro
+          data={data}
+          label={t(language, "template.label.profile")}
+          language={language}
+          SummaryIcon={SummaryIcon}
+        />
         <section className="creative-highlight">
           <h2>{t(language, "section.coreStrengths")}</h2>
           <div className="focus-list" aria-label={t(language, "section.focus")}>
@@ -311,8 +322,8 @@ function CreativeTechResume({
             ))}
           </div>
         </section>
-        <ModularSections data={data} language={language} fallbackSummaryIcon={SummaryIcon} legacyIcons={icons} />
-        <PortfolioQr data={data} language={language} show={showQr} />
+        <CoreSections data={data} icons={icons} language={language} />
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
@@ -343,8 +354,14 @@ function ATSCleanResume({
         <ContactBar data={data} />
       </header>
       <div className="ats-main">
-        <ModularSections data={data} language={language} fallbackSummaryIcon={SummaryIcon} legacyIcons={icons} />
-        <PortfolioQr data={data} language={language} show={showQr} />
+        <ResumeIntro
+          data={data}
+          label={t(language, "template.label.professionalSummary")}
+          language={language}
+          SummaryIcon={SummaryIcon}
+        />
+        <CoreSections data={data} icons={icons} language={language} />
+        <ResumeSidebarLists data={data} language={language} showQr={showQr} />
       </div>
     </article>
   );
@@ -425,49 +442,6 @@ function ResumeIntro({
       ) : null}
     </header>
   );
-}
-
-function ModularSections({ data, language, fallbackSummaryIcon, legacyIcons }: { data: ResumeData; language: AppLanguage; fallbackSummaryIcon: LucideIcon; legacyIcons: TemplateProps["icons"] }) {
-  const configs = data.sectionConfig?.length ? data.sectionConfig : defaultSectionConfig;
-  return <>{configs.filter((section) => section.enabled && sectionHasContent(data, section)).map((section) => {
-    const legacyIcon = section.kind === "experience" ? legacyIcons.experience : section.kind === "education" ? legacyIcons.education : section.kind === "projects" ? legacyIcons.projects : section.kind === "summary" ? legacyIcons.summary : undefined;
-    const Icon = data.sectionConfig?.length ? (iconMap[section.icon] ?? fallbackSummaryIcon) : (legacyIcon ?? iconMap[section.icon] ?? fallbackSummaryIcon);
-    if (section.kind === "summary") return (
-      <header className="topline" key={section.id}>
-        <div className="section-title"><span className="icon-badge" aria-hidden="true"><Icon size={15} /></span><h2>{section.title}</h2></div>
-        <p className="summary">{data.summary}</p>
-        {data.focus.length ? <div className="focus-list">{data.focus.map((item) => <span key={item}>{item}</span>)}</div> : null}
-        {data.sections.additional ? <p className="availability"><strong>{t(language, "section.availability")}</strong>{data.sections.additional}</p> : null}
-      </header>
-    );
-    if (section.kind === "experience") return <TimelineSection key={section.id} section={section} entries={data.sections.experience.map((x) => ({ title: x.title, subtitle: x.organization, period: x.period, description: x.description }))} language={language} />;
-    if (section.kind === "education") return <TimelineSection key={section.id} section={section} entries={data.sections.education.map((x) => ({ title: x.degree, subtitle: x.institution, period: x.period, description: x.detail }))} language={language} />;
-    if (section.kind === "projects") return <Section key={section.id} title={section.title} icon={Icon}><div className="project-grid">{data.sections.projects.map((x, i) => <article className="project" key={`${x.name}-${i}`}><h3>{x.name}</h3><p>{x.description}</p></article>)}</div></Section>;
-    if (section.kind === "skills" || section.kind === "tools") return <Section key={section.id} title={section.title} icon={Icon}><ul className="simple-list">{data.sections[section.kind].map((x, i) => <li key={`${x}-${i}`}>{x}</li>)}</ul></Section>;
-    if (section.kind === "languages") return <Section key={section.id} title={section.title} icon={Icon}><ul className="language-list">{data.sections.languages.map((x, i) => <li key={`${x.name}-${i}`}><strong>{x.name}</strong> {localizeFixedValue(language, x.level)}</li>)}</ul></Section>;
-    const extra = data.extraSections?.find((item) => item.id === section.id);
-    if (!extra) return null;
-    if (section.kind === "text") return <Section key={section.id} title={section.title} icon={Icon}><p>{extra.text}</p></Section>;
-    if (section.kind === "list") return <Section key={section.id} title={section.title} icon={Icon}><ul className="simple-list">{extra.items.map((x, i) => <li key={`${x.title}-${i}`}>{x.title}</li>)}</ul></Section>;
-    return <TimelineSection key={section.id} section={section} entries={extra.items} language={language} />;
-  })}</>;
-}
-
-function PortfolioQr({ data, language, show }: { data: ResumeData; language: AppLanguage; show?: boolean }) {
-  if (!show || !data.contact.portfolio) return null;
-  return <div className="list-block qr-list-block"><h2>{t(language, "section.portfolio")}</h2><QRCode value={data.contact.portfolio} language={language} /></div>;
-}
-
-function TimelineSection({ section, entries, language }: { section: ResumeSectionConfig; entries: Array<{ title: string; subtitle: string; period: string; description: string }>; language: AppLanguage }) {
-  const Icon = iconMap[section.icon];
-  return <Section title={section.title} icon={Icon}><div className="timeline">{entries.map((entry, index) => <div className="entry" key={`${entry.title}-${index}`}><h3>{entry.title}</h3>{entry.period ? <time>{localizeFixedValue(language, entry.period)}</time> : null}{entry.subtitle ? <span className="org">{entry.subtitle}</span> : null}{entry.description ? <p>{entry.description}</p> : null}</div>)}</div></Section>;
-}
-
-function sectionHasContent(data: ResumeData, section: ResumeSectionConfig) {
-  if (section.kind === "summary") return Boolean(data.summary.trim() || data.focus.some(Boolean));
-  if (["experience", "education", "projects", "skills", "tools", "languages"].includes(section.kind)) return (data.sections[section.kind as keyof ResumeData["sections"]] as unknown[] | undefined)?.length;
-  const extra = data.extraSections?.find((item) => item.id === section.id);
-  return Boolean(extra && (extra.text?.trim() || extra.items.some((item) => Object.values(item).some((value) => value.trim()))));
 }
 
 function CoreSections({
@@ -576,7 +550,7 @@ function ListBlock({
 }
 
 function ContactBar({ data }: { data: ResumeData }) {
-  const legacyItems = [
+  const contactItems = [
     data.contact.email,
     data.contact.phone,
     data.contact.location,
@@ -584,7 +558,6 @@ function ContactBar({ data }: { data: ResumeData }) {
     data.contact.linkedIn.replace(/^https?:\/\/(www\.)?/, ""),
     data.contact.github.replace(/^https?:\/\/(www\.)?/, ""),
   ].filter(Boolean);
-  const contactItems = [...legacyItems, ...(data.contact.items ?? []).filter((item) => item.enabled && item.value.trim()).map((item) => item.value)];
 
   return (
     <ul className="contact-bar">

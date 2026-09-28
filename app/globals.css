@@ -1087,53 +1087,6 @@ a {
   text-transform: uppercase;
 }
 
-.section-manager > p,
-.contact-items-editor > h3 {
-  margin: 0 0 0.75rem;
-  color: var(--muted);
-  font-size: 0.84rem;
-}
-
-.section-manager-row,
-.contact-item-row,
-.section-add-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(7rem, auto) auto auto;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.contact-item-row {
-  grid-template-columns: minmax(6rem, 0.7fr) minmax(8rem, 1fr) minmax(8rem, 1fr) auto auto;
-  margin-bottom: 0.55rem;
-}
-
-.section-add-row {
-  grid-template-columns: minmax(0, 1fr) auto;
-  margin-top: 0.8rem;
-}
-
-.compact-toggle {
-  display: inline-flex;
-  gap: 0.35rem;
-  align-items: center;
-  white-space: nowrap;
-  font-size: 0.78rem;
-}
-
-.contact-items-editor {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
-}
-
-@media (max-width: 720px) {
-  .section-manager-row,
-  .contact-item-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 .template-grid {
   display: grid;
   gap: 10px;
