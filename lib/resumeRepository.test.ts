@@ -6,6 +6,7 @@ import {
   resumeLibraryStorageKey,
   ResumeRepository,
   resumeLibraryVersion,
+  exportResume,
   type StorageLike,
 } from "./resumeRepository";
 
@@ -125,6 +126,45 @@ describe("ResumeRepository", () => {
     expect(imported.name).toBe("Imported");
     expect(imported.id).not.toBe(repository.getAllResumes()[0].id);
     expect(() => repository.importResume({ nope: true })).toThrow("Invalid ResumeCraft resume file");
+  });
+
+  it("imports version 1 unchanged and round-trips modular version 2 fields", () => {
+    repository.getLibrary();
+    const legacy = repository.importResume({ format: "resumecraft-resume", version: 1, name: "Legacy", data: content });
+    expect(legacy.data.resume.sectionPreferences).toBeUndefined();
+    expect(legacy.data.resume.contact.visibility).toBeUndefined();
+
+    const modular = structuredClone(content);
+    modular.resume.sectionPreferences = [
+      { id: "summary", enabled: true }, { id: "experience", enabled: true, title: "Experiencia Clínica", icon: "medical" },
+      { id: "projects", enabled: false }, { id: "education", enabled: true }, { id: "skills", enabled: true },
+      { id: "tools", enabled: false }, { id: "languages", enabled: true },
+    ];
+    modular.resume.contact.visibility = { github: false, portfolio: false };
+    modular.resume.contact.custom = [{ id: "license", label: "Colegiado", value: "12345", icon: "certificate", enabled: true }];
+    modular.resume.extraSections = [{ id: "certifications", kind: "entries", enabled: true, title: "Certificaciones", icon: "certificate", entries: [{ title: "Anestesiología", subtitle: "Consejo Médico", period: "2026", description: "Vigente" }] }];
+    const saved = repository.createResume("Medical", modular);
+    const exported = JSON.parse(exportResume(saved));
+    expect(exported.version).toBe(2);
+    const imported = repository.importResume(exported);
+    expect(imported.data).toEqual(modular);
+  });
+
+  it("recovers data saved by the reverted experimental modular build", () => {
+    repository.getLibrary();
+    const experimental = structuredClone(content) as typeof content & { resume: typeof content.resume & Record<string, unknown> };
+    experimental.resume.sectionConfig = [
+      { id: "summary", kind: "summary", title: "Professional Summary", icon: "user", enabled: true },
+      { id: "experience", kind: "experience", title: "Experiencia Clínica", icon: "stethoscope", enabled: true },
+      { id: "projects", kind: "projects", title: "Projects", icon: "folder", enabled: false },
+    ];
+    experimental.resume.contact = { ...experimental.resume.contact, items: [{ id: "license", label: "License", value: "MED-1", icon: "certificate", enabled: true }] } as typeof experimental.resume.contact;
+    (experimental.resume as Record<string, unknown>).extraSections = [{ id: "cert", kind: "credentials", title: "Certificaciones", icon: "certificate", enabled: true, items: [{ title: "Board", subtitle: "College", period: "2026", description: "Active" }] }];
+    const imported = repository.importResume({ format: "resumecraft-resume", version: 2, data: experimental });
+    expect(imported.data.resume.sectionPreferences?.find((item) => item.id === "summary")?.title).toBeUndefined();
+    expect(imported.data.resume.sectionPreferences?.find((item) => item.id === "experience")?.title).toBe("Experiencia Clínica");
+    expect(imported.data.resume.contact.custom?.[0].value).toBe("MED-1");
+    expect(imported.data.resume.extraSections?.[0].kind).toBe("entries");
   });
 
   it("surfaces browser quota/storage failures", () => {

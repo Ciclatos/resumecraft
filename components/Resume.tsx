@@ -13,6 +13,8 @@ import type {
   TypeScale,
 } from "../data/resume";
 import { localizeFixedValue, t, type AppLanguage } from "../data/i18n";
+import { contactEnabled, extraSectionTitle, mainSectionIds, listSectionIds, resolveSectionPreferences, sectionEnabled, sectionTitle } from "../lib/resumeCustomization";
+import { resumeIcon } from "../lib/resumeIcons";
 
 type ResumeProps = {
   data: ResumeData;
@@ -419,14 +421,17 @@ function ResumeIntro({
   language: AppLanguage;
   SummaryIcon: LucideIcon;
 }) {
+  if (!sectionEnabled(data, "summary") || (!data.summary.trim() && !data.focus.some((item) => item.trim()))) return null;
+  const configuredIcon = data.sectionPreferences?.find((item) => item.id === "summary")?.icon;
+  const DisplayIcon = resumeIcon(configuredIcon, SummaryIcon);
   return (
     <header className="topline">
       <p className="kicker">{label}</p>
       <div className="section-title">
         <span className="icon-badge" aria-hidden="true">
-          <SummaryIcon size={15} strokeWidth={2.3} />
+          <DisplayIcon size={15} strokeWidth={2.3} />
         </span>
-        <h2>{t(language, "section.profile")}</h2>
+        <h2>{sectionTitle(data, "summary", language)}</h2>
       </div>
       <p className="summary">{data.summary}</p>
       <div className="focus-list" aria-label={t(language, "section.focus")}>
@@ -453,9 +458,11 @@ function CoreSections({
   icons: TemplateProps["icons"];
   language: AppLanguage;
 }) {
-  return (
-    <>
-      <Section title={t(language, "section.experienceLong")} icon={icons.experience}>
+  const preferences = resolveSectionPreferences(data).filter((item) => mainSectionIds.includes(item.id));
+  return <>{preferences.map((preference) => {
+    if (!preference.enabled) return null;
+    if (preference.id === "experience") return data.sections.experience.length ? (
+      <Section key="experience" title={sectionTitle(data, "experience", language)} icon={resumeIcon(preference.icon, icons.experience)}>
         <div className="timeline">
           {data.sections.experience.map((entry) => (
             <div className="entry" key={`${entry.organization}-${entry.period}-${entry.title}`}>
@@ -467,8 +474,9 @@ function CoreSections({
           ))}
         </div>
       </Section>
-
-      <Section title={t(language, "section.projectsLong")} icon={icons.projects}>
+    ) : null;
+    if (preference.id === "projects") return data.sections.projects.length ? (
+      <Section key="projects" title={sectionTitle(data, "projects", language)} icon={resumeIcon(preference.icon, icons.projects)}>
         <div className="project-grid">
           {data.sections.projects.map((project) => (
             <article className="project" key={project.name}>
@@ -478,8 +486,9 @@ function CoreSections({
           ))}
         </div>
       </Section>
-
-      <Section title={t(language, "section.education")} icon={icons.education}>
+    ) : null;
+    if (preference.id === "education") return data.sections.education.length ? (
+      <Section key="education" title={sectionTitle(data, "education", language)} icon={resumeIcon(preference.icon, icons.education)}>
         <div className="timeline">
           {data.sections.education.map((entry) => (
             <div className="entry" key={`${entry.degree}-${entry.period}`}>
@@ -491,8 +500,18 @@ function CoreSections({
           ))}
         </div>
       </Section>
-    </>
-  );
+    ) : null;
+    return null;
+  })}<ExtraSections data={data} language={language} /></>;
+}
+
+function ExtraSections({ data, language }: { data: ResumeData; language: AppLanguage }) {
+  return <>{(data.extraSections ?? []).filter((item) => item.enabled && (item.text?.trim() || item.entries.length)).map((extra) => {
+    const Icon = resumeIcon(extra.icon);
+    if (extra.kind === "text") return <Section key={extra.id} title={extraSectionTitle(extra, language)} icon={Icon}><p>{extra.text}</p></Section>;
+    if (extra.kind === "list") return <Section key={extra.id} title={extraSectionTitle(extra, language)} icon={Icon}><ul className="simple-list">{extra.entries.map((entry, index) => <li key={`${entry.title}-${index}`}>{entry.title}</li>)}</ul></Section>;
+    return <Section key={extra.id} title={extraSectionTitle(extra, language)} icon={Icon}><div className="timeline">{extra.entries.map((entry, index) => <div className="entry" key={`${entry.title}-${index}`}><h3>{entry.title}</h3>{entry.period ? <time>{localizeFixedValue(language, entry.period)}</time> : null}{entry.subtitle ? <span className="org">{entry.subtitle}</span> : null}{entry.description ? <p>{entry.description}</p> : null}{entry.contact ? <p>{entry.contact}</p> : null}</div>)}</div></Section>;
+  })}</>;
 }
 
 function ResumeSidebarLists({
@@ -504,12 +523,16 @@ function ResumeSidebarLists({
   language: AppLanguage;
   showQr?: boolean;
 }) {
+  const preferences = resolveSectionPreferences(data).filter((item) => listSectionIds.includes(item.id));
   return (
     <aside className="resume-lists">
-      <ListBlock title={t(language, "section.skills")} items={data.sections.skills} />
-      <ListBlock title={t(language, "section.tools")} items={data.sections.tools} compact />
-      <div className="list-block">
-        <h2>{t(language, "section.languages")}</h2>
+      {preferences.map((preference) => {
+        if (!preference.enabled) return null;
+        if (preference.id === "skills") return data.sections.skills.length ? <ListBlock key="skills" title={sectionTitle(data, "skills", language)} items={data.sections.skills} /> : null;
+        if (preference.id === "tools") return data.sections.tools.length ? <ListBlock key="tools" title={sectionTitle(data, "tools", language)} items={data.sections.tools} compact /> : null;
+        if (preference.id !== "languages" || !data.sections.languages.length) return null;
+        return <div className="list-block" key="languages">
+        <h2>{sectionTitle(data, "languages", language)}</h2>
         <ul>
           {data.sections.languages.map((item) => (
             <li key={item.name}>
@@ -517,8 +540,8 @@ function ResumeSidebarLists({
             </li>
           ))}
         </ul>
-      </div>
-      {showQr && data.contact.portfolio ? (
+      </div>})}
+      {showQr && contactEnabled(data, "portfolio") && data.contact.portfolio ? (
         <div className="list-block qr-list-block">
           <h2>{t(language, "section.portfolio")}</h2>
           <QRCode value={data.contact.portfolio} language={language} />
@@ -551,12 +574,13 @@ function ListBlock({
 
 function ContactBar({ data }: { data: ResumeData }) {
   const contactItems = [
-    data.contact.email,
-    data.contact.phone,
-    data.contact.location,
-    data.contact.portfolio.replace(/^https?:\/\//, ""),
-    data.contact.linkedIn.replace(/^https?:\/\/(www\.)?/, ""),
-    data.contact.github.replace(/^https?:\/\/(www\.)?/, ""),
+    contactEnabled(data, "email") ? data.contact.email : "",
+    contactEnabled(data, "phone") ? data.contact.phone : "",
+    contactEnabled(data, "location") ? data.contact.location : "",
+    contactEnabled(data, "portfolio") ? data.contact.portfolio.replace(/^https?:\/\//, "") : "",
+    contactEnabled(data, "linkedIn") ? data.contact.linkedIn.replace(/^https?:\/\/(www\.)?/, "") : "",
+    contactEnabled(data, "github") ? data.contact.github.replace(/^https?:\/\/(www\.)?/, "") : "",
+    ...(data.contact.custom ?? []).filter((item) => item.enabled && item.value.trim()).map((item) => item.value),
   ].filter(Boolean);
 
   return (

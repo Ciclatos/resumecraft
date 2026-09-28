@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import type { ResumeData } from "../data/resume";
 import { localizeFixedValue, t, type AppLanguage } from "../data/i18n";
+import { contactEnabled, listSectionIds, resolveSectionPreferences, sectionTitle } from "../lib/resumeCustomization";
+import { resumeIcon } from "../lib/resumeIcons";
 import { QRCode } from "./QRCode";
 
 type SidebarProps = {
@@ -27,6 +29,11 @@ export function Sidebar({ data, language = "es", showPhoto = true, showQr = fals
   const portfolioLabel = contact.portfolio.replace(/^https?:\/\//, "");
   const linkedInLabel = contact.linkedIn.replace(/^https?:\/\/(www\.)?/, "");
   const githubLabel = contact.github.replace(/^https?:\/\/(www\.)?/, "");
+  const listPreferences = resolveSectionPreferences(data).filter((item) => listSectionIds.includes(item.id));
+  const customContacts = (contact.custom ?? []).filter((item) => item.enabled && item.value.trim());
+  const hasContact = (contactEnabled(data, "email") && contact.email) || (contactEnabled(data, "phone") && contact.phone)
+    || (contactEnabled(data, "location") && contact.location) || (contactEnabled(data, "portfolio") && contact.portfolio)
+    || (contactEnabled(data, "linkedIn") && contact.linkedIn) || (contactEnabled(data, "github") && contact.github) || customContacts.length;
   const initials =
     data.name
       .split(" ")
@@ -59,69 +66,54 @@ export function Sidebar({ data, language = "es", showPhoto = true, showQr = fals
         <p>{data.headline}</p>
       </div>
 
-      <SideSection title={t(language, "section.contact")} icon={User}>
+      {hasContact ? <SideSection title={t(language, "section.contact")} icon={User}>
         <ul className="contact-list">
-          <li>
+          {contactEnabled(data, "email") && contact.email ? <li>
             <Mail size={14} aria-hidden="true" />
             <a href={`mailto:${contact.email}`}>{contact.email}</a>
-          </li>
-          <li>
+          </li> : null}
+          {contactEnabled(data, "phone") && contact.phone ? <li>
             <Phone size={14} aria-hidden="true" />
             <a href={`tel:${contact.phone.replace(/\s/g, "")}`}>{contact.phone}</a>
-          </li>
-          <li>
+          </li> : null}
+          {contactEnabled(data, "location") && contact.location ? <li>
             <MapPin size={14} aria-hidden="true" />
             <span>{contact.location}</span>
-          </li>
-          {contact.portfolio ? (
+          </li> : null}
+          {contactEnabled(data, "portfolio") && contact.portfolio ? (
             <li>
               <Globe size={14} aria-hidden="true" />
               <a href={contact.portfolio}>{portfolioLabel}</a>
             </li>
           ) : null}
-          {contact.linkedIn ? (
+          {contactEnabled(data, "linkedIn") && contact.linkedIn ? (
             <li>
               <Linkedin size={14} aria-hidden="true" />
               <a href={contact.linkedIn}>{linkedInLabel}</a>
             </li>
           ) : null}
-          {contact.github ? (
+          {contactEnabled(data, "github") && contact.github ? (
             <li>
               <Github size={14} aria-hidden="true" />
               <a href={contact.github}>{githubLabel}</a>
             </li>
           ) : null}
+          {customContacts.map((item) => {
+            const Icon = resumeIcon(item.icon, User);
+            return <li key={item.id}><Icon size={14} aria-hidden="true" />{item.url ? <a href={item.url}>{item.value}</a> : <span>{item.value}</span>}</li>;
+          })}
         </ul>
-      </SideSection>
+      </SideSection> : null}
 
-      <SideSection title={t(language, "section.skills")} icon={Sparkles}>
-        <ul className="simple-list">
-          {data.sections.skills.map((skill) => (
-            <li key={skill}>{skill}</li>
-          ))}
-        </ul>
-      </SideSection>
+      {listPreferences.map((preference) => {
+        if (!preference.enabled) return null;
+        if (preference.id === "skills" && data.sections.skills.length) return <SideSection key="skills" title={sectionTitle(data, "skills", language)} icon={resumeIcon(preference.icon, Sparkles)}><ul className="simple-list">{data.sections.skills.map((skill) => <li key={skill}>{skill}</li>)}</ul></SideSection>;
+        if (preference.id === "tools" && data.sections.tools.length) return <SideSection key="tools" title={sectionTitle(data, "tools", language)} icon={resumeIcon(preference.icon, Wrench)}><ul className="simple-list tool-list">{data.sections.tools.map((tool) => <li key={tool}>{tool}</li>)}</ul></SideSection>;
+        if (preference.id === "languages" && data.sections.languages.length) return <SideSection key="languages" title={sectionTitle(data, "languages", language)} icon={resumeIcon(preference.icon, Languages)}><ul className="language-list">{data.sections.languages.map((item) => <li key={item.name}><strong>{item.name}</strong>{localizeFixedValue(language, item.level)}</li>)}</ul></SideSection>;
+        return null;
+      })}
 
-      <SideSection title={t(language, "section.tools")} icon={Wrench}>
-        <ul className="simple-list tool-list">
-          {data.sections.tools.map((tool) => (
-            <li key={tool}>{tool}</li>
-          ))}
-        </ul>
-      </SideSection>
-
-      <SideSection title={t(language, "section.languages")} icon={Languages}>
-        <ul className="language-list">
-          {data.sections.languages.map((item) => (
-            <li key={item.name}>
-              <strong>{item.name}</strong>
-              {localizeFixedValue(language, item.level)}
-            </li>
-          ))}
-        </ul>
-      </SideSection>
-
-      {showQr && contact.portfolio ? (
+      {showQr && contactEnabled(data, "portfolio") && contact.portfolio ? (
         <SideSection title={t(language, "section.portfolio")} icon={Globe}>
           <QRCode value={contact.portfolio} language={language} />
         </SideSection>

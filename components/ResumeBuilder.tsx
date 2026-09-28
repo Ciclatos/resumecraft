@@ -31,6 +31,11 @@ import {
   type ResumeProject,
   type ResumeTemplate,
   type TypeScale,
+  type ExtraResumeSection,
+  type ExtraSectionKind,
+  type ExtraSectionPreset,
+  type ResumeIconId,
+  type ResumeSectionPreference,
 } from "../data/resume";
 import { languageOptions, t, type AppLanguage, type TranslationKey } from "../data/i18n";
 import { useUserProfile } from "../hooks/useUserProfile";
@@ -41,6 +46,8 @@ import {
   ResumeStorageError,
   type SavedResume,
 } from "../lib/resumeRepository";
+import { extraSectionTitle, resolveSectionPreferences, sectionTitle } from "../lib/resumeCustomization";
+import { resumeIconOptions } from "../lib/resumeIcons";
 
 const saveDelayMs = 400;
 const maxPhotoBytes = 1.5 * 1024 * 1024;
@@ -373,12 +380,24 @@ export function ResumeBuilder() {
     setProfileRevision((current) => current + 1);
   }
 
-  function updateContact(field: keyof ResumeData["contact"], value: string) {
+  function updateContact(field: Exclude<keyof ResumeData["contact"], "visibility" | "custom">, value: string) {
     setResume((current) => ({
       ...current,
       contact: { ...current.contact, [field]: value },
     }));
     setProfileRevision((current) => current + 1);
+  }
+
+  function updateContactOptions(next: Pick<ResumeData["contact"], "visibility" | "custom">) {
+    setResume((current) => ({ ...current, contact: { ...current.contact, ...next } }));
+  }
+
+  function updateSectionPreferences(sectionPreferences: ResumeSectionPreference[]) {
+    setResume((current) => ({ ...current, sectionPreferences }));
+  }
+
+  function updateExtraSections(extraSections: ExtraResumeSection[]) {
+    setResume((current) => ({ ...current, extraSections }));
   }
 
   function updateSettings(next: Partial<BuilderSettings>) {
@@ -683,6 +702,12 @@ export function ResumeBuilder() {
               </Field>
             </div>
 
+            <ContactManager
+              language={language}
+              contact={resume.contact}
+              onChange={updateContactOptions}
+            />
+
             <div className="profile-storage-note">
               <Database size={18} aria-hidden="true" />
               <div>
@@ -709,6 +734,15 @@ export function ResumeBuilder() {
             items={resume.focus}
             addLabel={t(language, "actions.addFocus")}
             onChange={(focus) => update({ focus })}
+          />
+
+          <SectionManager
+            data={resume}
+            language={language}
+            preferences={resolveSectionPreferences(resume)}
+            onChange={updateSectionPreferences}
+            extraSections={resume.extraSections ?? []}
+            onExtraChange={updateExtraSections}
           />
 
           <ExperienceEditor
@@ -750,6 +784,19 @@ export function ResumeBuilder() {
             items={resume.sections.languages}
             onChange={(languages) => updateSections({ languages })}
           />
+
+          {(resume.extraSections ?? []).map((section, index, sections) => (
+            <ExtraSectionEditor
+              key={section.id}
+              language={language}
+              section={section}
+              onChange={(next) => updateExtraSections((resume.extraSections ?? []).map((item) => item.id === next.id ? next : item))}
+              onMove={(direction) => moveItem(sections, index, direction, updateExtraSections)}
+              onRemove={() => removeItem(sections, index, updateExtraSections)}
+              index={index}
+              total={sections.length}
+            />
+          ))}
 
           <div className="builder-actions">
             <button type="button" onClick={loadExample}>
@@ -1122,6 +1169,34 @@ async function fileToOptimizedDataUrl(file: File) {
   context.drawImage(image, 0, 0, width, height);
 
   return canvas.toDataURL("image/jpeg", 0.86);
+}
+
+const contactFieldIds = ["email", "phone", "location", "portfolio", "linkedIn", "github"] as const;
+const extraSectionPresets: Array<{ preset: ExtraSectionPreset; labelKey: TranslationKey; kind: ExtraSectionKind; icon: ResumeIconId }> = [
+  { preset: "certifications", labelKey: "section.certifications", kind: "entries", icon: "certificate" },
+  { preset: "courses", labelKey: "section.courses", kind: "entries", icon: "book" },
+  { preset: "memberships", labelKey: "section.memberships", kind: "list", icon: "users" },
+  { preset: "publications", labelKey: "section.publications", kind: "entries", icon: "book" },
+  { preset: "awards", labelKey: "section.awards", kind: "entries", icon: "award" },
+  { preset: "volunteer", labelKey: "section.volunteer", kind: "timeline", icon: "heart" },
+  { preset: "references", labelKey: "section.references", kind: "references", icon: "users" },
+  { preset: "additional", labelKey: "section.additional", kind: "text", icon: "info" },
+  { preset: "custom", labelKey: "section.custom", kind: "list", icon: "info" },
+];
+
+function SectionManager({ data, language, preferences, onChange, extraSections, onExtraChange }: { data: ResumeData; language: AppLanguage; preferences: ResumeSectionPreference[]; onChange: (items: ResumeSectionPreference[]) => void; extraSections: ExtraResumeSection[]; onExtraChange: (items: ExtraResumeSection[]) => void }) {
+  const [presetIndex, setPresetIndex] = useState(0);
+  return <details className="editor-section advanced-editor"><summary>{language === "en" ? "Manage resume sections" : "Administrar secciones del CV"}</summary><p className="advanced-editor-help">{language === "en" ? "Show, order, rename, or change an icon without altering the selected template." : "Muestra, ordena, renombra o cambia un icono sin alterar la plantilla elegida."}</p><div className="item-stack">{preferences.map((preference, index) => <div className="section-preference" key={preference.id}><label className="toggle-control"><span>{sectionTitle(data, preference.id, language)}</span><input type="checkbox" checked={preference.enabled} onChange={(event) => onChange(preferences.map((item) => item.id === preference.id ? { ...item, enabled: event.target.checked } : item))} /></label><div className="section-preference-options"><input aria-label={language === "en" ? "Custom section title" : "Título personalizado"} placeholder={sectionTitle({ ...data, sectionPreferences: [] }, preference.id, language)} value={preference.title ?? ""} onChange={(event) => onChange(preferences.map((item) => item.id === preference.id ? { ...item, title: event.target.value || undefined } : item))} /><select aria-label={language === "en" ? "Section icon" : "Icono de sección"} value={preference.icon ?? ""} onChange={(event) => onChange(preferences.map((item) => item.id === preference.id ? { ...item, icon: (event.target.value || undefined) as ResumeIconId | undefined } : item))}><option value="">{language === "en" ? "Default icon" : "Icono predeterminado"}</option>{resumeIconOptions.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select><div className="card-actions"><button type="button" disabled={index === 0} onClick={() => moveItem(preferences, index, -1, onChange)} aria-label={t(language, "actions.moveUp")}><ArrowUp size={15} /></button><button type="button" disabled={index === preferences.length - 1} onClick={() => moveItem(preferences, index, 1, onChange)} aria-label={t(language, "actions.moveDown")}><ArrowDown size={15} /></button></div></div></div>)}</div><div className="section-add"><select value={presetIndex} onChange={(event) => setPresetIndex(Number(event.target.value))}>{extraSectionPresets.map((preset, index) => <option value={index} key={`${preset.kind}-${index}`}>{t(language, preset.labelKey)}</option>)}</select><AddButton label={language === "en" ? "Add optional section" : "Agregar sección opcional"} onClick={() => { const preset = extraSectionPresets[presetIndex]; onExtraChange([...extraSections, { id: `section-${Date.now().toString(36)}`, kind: preset.kind, preset: preset.preset, enabled: true, title: "", icon: preset.icon, entries: [], text: "" }]); }} /></div></details>;
+}
+
+function ContactManager({ language, contact, onChange }: { language: AppLanguage; contact: ResumeData["contact"]; onChange: (next: Pick<ResumeData["contact"], "visibility" | "custom">) => void }) {
+  const visibility = contact.visibility ?? {};
+  const custom = contact.custom ?? [];
+  return <details className="advanced-editor"><summary>{language === "en" ? "Contact visibility and custom details" : "Visibilidad y datos de contacto personalizados"}</summary><div className="contact-visibility">{contactFieldIds.map((id) => <label className="compact-check" key={id}><input type="checkbox" checked={visibility[id] ?? true} onChange={(event) => onChange({ visibility: { ...visibility, [id]: event.target.checked }, custom })} />{id === "linkedIn" ? "LinkedIn" : id === "github" ? "GitHub" : id === "portfolio" ? (language === "en" ? "Website / Portfolio" : "Sitio web / Portafolio") : t(language, `field.${id}` as TranslationKey)}</label>)}</div>{custom.map((item, index) => <div className="custom-contact-row" key={item.id}><input placeholder={language === "en" ? "Label" : "Etiqueta"} value={item.label} onChange={(event) => onChange({ visibility, custom: custom.map((current) => current.id === item.id ? { ...current, label: event.target.value } : current) })} /><input placeholder={language === "en" ? "Value" : "Valor"} value={item.value} onChange={(event) => onChange({ visibility, custom: custom.map((current) => current.id === item.id ? { ...current, value: event.target.value } : current) })} /><input placeholder="URL" value={item.url ?? ""} onChange={(event) => onChange({ visibility, custom: custom.map((current) => current.id === item.id ? { ...current, url: event.target.value } : current) })} /><select value={item.icon ?? "info"} onChange={(event) => onChange({ visibility, custom: custom.map((current) => current.id === item.id ? { ...current, icon: event.target.value as ResumeIconId } : current) })}>{resumeIconOptions.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select><label className="compact-check"><input type="checkbox" checked={item.enabled} onChange={(event) => onChange({ visibility, custom: custom.map((current) => current.id === item.id ? { ...current, enabled: event.target.checked } : current) })} />{language === "en" ? "Show" : "Mostrar"}</label><IconButton label={t(language, "actions.remove")} onClick={() => onChange({ visibility, custom: custom.filter((_, itemIndex) => itemIndex !== index) })} /></div>)}<AddButton label={language === "en" ? "Add custom contact" : "Agregar contacto personalizado"} onClick={() => onChange({ visibility, custom: [...custom, { id: `contact-${Date.now().toString(36)}`, label: "", value: "", url: "", icon: "info", enabled: true }] })} /></details>;
+}
+
+function ExtraSectionEditor({ language, section, onChange, onMove, onRemove, index, total }: { language: AppLanguage; section: ExtraResumeSection; onChange: (section: ExtraResumeSection) => void; onMove: (direction: -1 | 1) => void; onRemove: () => void; index: number; total: number }) {
+  return <section className="editor-section"><div className="extra-section-heading"><h2>{extraSectionTitle(section, language)}</h2><div className="card-actions"><button type="button" disabled={index === 0} onClick={() => onMove(-1)} aria-label={t(language, "actions.moveUp")}><ArrowUp size={15} /></button><button type="button" disabled={index === total - 1} onClick={() => onMove(1)} aria-label={t(language, "actions.moveDown")}><ArrowDown size={15} /></button><IconButton label={t(language, "actions.remove")} onClick={onRemove} /></div><label className="compact-check"><input type="checkbox" checked={section.enabled} onChange={(event) => onChange({ ...section, enabled: event.target.checked })} />{language === "en" ? "Show" : "Mostrar"}</label></div><div className="field-grid"><Field label={language === "en" ? "Section title" : "Título de sección"}><input value={section.title} onChange={(event) => onChange({ ...section, title: event.target.value })} /></Field><Field label={language === "en" ? "Icon" : "Icono"}><select value={section.icon} onChange={(event) => onChange({ ...section, icon: event.target.value as ResumeIconId })}>{resumeIconOptions.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select></Field></div>{section.kind === "text" ? <textarea rows={4} value={section.text ?? ""} onChange={(event) => onChange({ ...section, text: event.target.value })} /> : <><div className="item-stack">{section.entries.map((entry, index) => <EditorCard key={`${section.id}-${index}`} index={index} total={section.entries.length} language={language} onMove={(direction) => moveItem(section.entries, index, direction, (entries) => onChange({ ...section, entries }))} onRemove={() => removeItem(section.entries, index, (entries) => onChange({ ...section, entries }))}><Field label={section.kind === "list" ? (language === "en" ? "Item" : "Elemento") : t(language, "field.title")}><input value={entry.title} onChange={(event) => onChange({ ...section, entries: section.entries.map((item, itemIndex) => itemIndex === index ? { ...item, title: event.target.value } : item) })} /></Field>{section.kind !== "list" ? <><Field label={language === "en" ? "Institution / organization" : "Institución / organización"}><input value={entry.subtitle} onChange={(event) => onChange({ ...section, entries: section.entries.map((item, itemIndex) => itemIndex === index ? { ...item, subtitle: event.target.value } : item) })} /></Field><Field label={t(language, "field.period")}><input value={entry.period} onChange={(event) => onChange({ ...section, entries: section.entries.map((item, itemIndex) => itemIndex === index ? { ...item, period: event.target.value } : item) })} /></Field><Field label={t(language, "field.description")}><textarea rows={3} value={entry.description} onChange={(event) => onChange({ ...section, entries: section.entries.map((item, itemIndex) => itemIndex === index ? { ...item, description: event.target.value } : item) })} /></Field>{section.kind === "references" ? <Field label={language === "en" ? "Contact" : "Contacto"}><input value={entry.contact ?? ""} onChange={(event) => onChange({ ...section, entries: section.entries.map((item, itemIndex) => itemIndex === index ? { ...item, contact: event.target.value } : item) })} /></Field> : null}</> : null}</EditorCard>)}</div><AddButton label={language === "en" ? "Add entry" : "Agregar entrada"} onClick={() => onChange({ ...section, entries: [...section.entries, { title: "", subtitle: "", period: "", description: "", contact: "" }] })} /></>}</section>;
 }
 
 function TextListEditor({

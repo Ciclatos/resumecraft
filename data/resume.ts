@@ -24,6 +24,69 @@ export type ResumeLanguage = {
   level: string;
 };
 
+export type BuiltInSectionId =
+  | "summary"
+  | "experience"
+  | "projects"
+  | "education"
+  | "skills"
+  | "tools"
+  | "languages";
+
+export type ResumeIconId =
+  | "profile"
+  | "briefcase"
+  | "projects"
+  | "education"
+  | "skills"
+  | "tools"
+  | "languages"
+  | "medical"
+  | "certificate"
+  | "book"
+  | "users"
+  | "award"
+  | "heart"
+  | "info";
+
+export type ResumeSectionPreference = {
+  id: BuiltInSectionId;
+  enabled: boolean;
+  title?: string;
+  icon?: ResumeIconId;
+};
+
+export type ExtraSectionKind = "timeline" | "list" | "entries" | "references" | "text";
+export type ExtraSectionPreset = "certifications" | "courses" | "memberships" | "publications" | "awards" | "volunteer" | "references" | "additional" | "custom";
+
+export type ExtraSectionEntry = {
+  title: string;
+  subtitle: string;
+  period: string;
+  description: string;
+  contact?: string;
+};
+
+export type ExtraResumeSection = {
+  id: string;
+  kind: ExtraSectionKind;
+  preset?: ExtraSectionPreset;
+  enabled: boolean;
+  title: string;
+  icon: ResumeIconId;
+  entries: ExtraSectionEntry[];
+  text?: string;
+};
+
+export type ResumeContactItem = {
+  id: string;
+  label: string;
+  value: string;
+  url?: string;
+  icon?: ResumeIconId;
+  enabled: boolean;
+};
+
 export type ResumeContact = {
   email: string;
   phone: string;
@@ -31,6 +94,8 @@ export type ResumeContact = {
   portfolio: string;
   linkedIn: string;
   github: string;
+  visibility?: Partial<Record<"email" | "phone" | "location" | "portfolio" | "linkedIn" | "github", boolean>>;
+  custom?: ResumeContactItem[];
 };
 
 export type ResumeTemplate =
@@ -66,6 +131,8 @@ export type ResumeData = {
   contact: ResumeContact;
   summary: string;
   focus: string[];
+  sectionPreferences?: ResumeSectionPreference[];
+  extraSections?: ExtraResumeSection[];
   sections: {
     experience: ResumeEntry[];
     projects: ResumeProject[];

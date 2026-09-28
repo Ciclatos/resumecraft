@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ResumeContact, ResumeData } from "../data/resume";
+import type { ResumeData } from "../data/resume";
 
 export const userProfileStorageKey = "resumecraft:user-profile:v1";
 const saveDelayMs = 450;
@@ -10,7 +10,7 @@ export type UserProfile = {
   name: string;
   photo: string;
   headline: string;
-  contact: ResumeContact;
+  contact: Pick<ResumeData["contact"], "email" | "phone" | "location" | "portfolio" | "linkedIn" | "github">;
 };
 
 export function useUserProfile(resume: ResumeData, revision: number) {
@@ -60,6 +60,8 @@ export function fillEmptyProfileFields(data: ResumeData, profile: UserProfile | 
     photo: preferExisting(data.photo ?? "", profile.photo),
     headline: preferExisting(data.headline, profile.headline),
     contact: {
+      visibility: data.contact.visibility,
+      custom: data.contact.custom,
       email: preferExisting(data.contact.email, profile.contact.email),
       phone: preferExisting(data.contact.phone, profile.contact.phone),
       location: preferExisting(data.contact.location, profile.contact.location),
@@ -133,9 +135,7 @@ function parseProfile(value: unknown): UserProfile | null {
 }
 
 function hasProfileValues(profile: UserProfile) {
-  return [profile.name, profile.photo, profile.headline, ...Object.values(profile.contact)].some(
-    (value) => value.trim(),
-  );
+  return [profile.name, profile.photo, profile.headline, profile.contact.email, profile.contact.phone, profile.contact.location, profile.contact.portfolio, profile.contact.linkedIn, profile.contact.github].some((value) => value.trim());
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -1087,6 +1087,82 @@ a {
   text-transform: uppercase;
 }
 
+.advanced-editor {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.85rem;
+}
+
+.advanced-editor > summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.advanced-editor-help {
+  margin: 0.7rem 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.section-preference {
+  border-top: 1px solid var(--line);
+  padding-top: 0.65rem;
+}
+
+.section-preference-options,
+.custom-contact-row,
+.section-add,
+.extra-section-heading,
+.contact-visibility {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.section-preference-options > input,
+.section-preference-options > select,
+.custom-contact-row > input,
+.custom-contact-row > select,
+.section-add > select {
+  min-width: 0;
+  flex: 1;
+}
+
+.section-add {
+  margin-top: 0.8rem;
+}
+
+.contact-visibility {
+  flex-wrap: wrap;
+  margin: 0.8rem 0;
+}
+
+.compact-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.custom-contact-row {
+  margin-bottom: 0.55rem;
+}
+
+.extra-section-heading {
+  justify-content: space-between;
+}
+
+@media (max-width: 720px) {
+  .section-preference-options,
+  .custom-contact-row,
+  .section-add {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 .template-grid {
   display: grid;
   gap: 10px;

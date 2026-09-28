@@ -231,7 +231,7 @@ export class ResumeRepository {
 }
 
 export function exportResume(resume: SavedResume) {
-  return JSON.stringify({ format: "resumecraft-resume", version: 1, name: resume.name, data: resume.data }, null, 2);
+  return JSON.stringify({ format: "resumecraft-resume", version: 2, name: resume.name, data: resume.data }, null, 2);
 }
 
 function normalizeLibrary(value: unknown): ResumeLibrary | null {
@@ -258,7 +258,7 @@ function normalizeLibrary(value: unknown): ResumeLibrary | null {
 }
 
 function parseImport(value: unknown) {
-  if (isRecord(value) && value.format === "resumecraft-resume") return parseContent(value.data);
+  if (isRecord(value) && value.format === "resumecraft-resume" && (value.version === 1 || value.version === 2 || value.version === undefined)) return parseContent(value.data);
   return parseContent(value);
 }
 
@@ -267,9 +267,44 @@ function importName(value: unknown) {
 }
 
 function parseContent(value: unknown): ResumeContent | null {
-  if (!isRecord(value) || !isResumeData(value.resume)) return null;
+  if (!isRecord(value)) return null;
+  const resume = migrateExperimentalResume(value.resume);
+  if (!isResumeData(resume)) return null;
   const settings = isRecord(value.settings) ? value.settings : {};
-  return { resume: clone(value.resume), settings: normalizeSettings(settings) };
+  return { resume: clone(resume), settings: normalizeSettings(settings) };
+}
+
+function migrateExperimentalResume(value: unknown): unknown {
+  if (!isRecord(value)) return value;
+  const resume = clone(value) as Record<string, unknown>;
+  if (resume.sectionPreferences === undefined && Array.isArray(resume.sectionConfig)) {
+    const defaultTitles = new Set(["Professional Summary", "Experience", "Projects", "Education", "Skills", "Tools", "Languages"]);
+    resume.sectionPreferences = resume.sectionConfig.flatMap((item): unknown[] => {
+      if (!isRecord(item) || !sectionIds.includes(String(item.id)) || typeof item.enabled !== "boolean") return [];
+      return [{ id: item.id, enabled: item.enabled, title: isString(item.title) && !defaultTitles.has(item.title) ? item.title : undefined, icon: experimentalIcon(item.icon) }];
+    });
+    delete resume.sectionConfig;
+  }
+  if (isRecord(resume.contact)) {
+    const contact = resume.contact;
+    if (contact.custom === undefined && Array.isArray(contact.items)) contact.custom = contact.items;
+    delete contact.items;
+  }
+  if (Array.isArray(resume.extraSections)) {
+    resume.extraSections = resume.extraSections.map((item) => {
+      if (!isRecord(item) || item.entries !== undefined || !Array.isArray(item.items)) return item;
+      const migrated: Record<string, unknown> = { ...item, entries: item.items, kind: item.kind === "credentials" ? "entries" : item.kind };
+      delete migrated.items;
+      return migrated;
+    });
+  }
+  return resume;
+}
+
+function experimentalIcon(value: unknown) {
+  const map: Record<string, string> = { user: "profile", folder: "projects", graduation: "education", sparkles: "skills", wrench: "tools", stethoscope: "medical" };
+  const normalized = map[String(value)] ?? String(value ?? "");
+  return iconIds.includes(normalized) ? normalized : undefined;
 }
 
 function isResumeData(value: unknown): value is ResumeData {
@@ -284,7 +319,42 @@ function isResumeData(value: unknown): value is ResumeData {
     && Array.isArray(sections.education) && sections.education.every((item) => hasStrings(item, ["degree", "institution", "period", "detail"]))
     && Array.isArray(sections.skills) && sections.skills.every(isString)
     && Array.isArray(sections.tools) && sections.tools.every(isString)
-    && Array.isArray(sections.languages) && sections.languages.every((item) => hasStrings(item, ["name", "level"]));
+    && Array.isArray(sections.languages) && sections.languages.every((item) => hasStrings(item, ["name", "level"]))
+    && validSectionPreferences(value.sectionPreferences)
+    && validExtraSections(value.extraSections)
+    && validContactOptions(contact);
+}
+
+const sectionIds = ["summary", "experience", "projects", "education", "skills", "tools", "languages"];
+const iconIds = ["profile", "briefcase", "projects", "education", "skills", "tools", "languages", "medical", "certificate", "book", "users", "award", "heart", "info"];
+const extraKinds = ["timeline", "list", "entries", "references", "text"];
+const extraPresets = ["certifications", "courses", "memberships", "publications", "awards", "volunteer", "references", "additional", "custom"];
+
+function validSectionPreferences(value: unknown) {
+  return value === undefined || (Array.isArray(value) && value.every((item) => isRecord(item)
+    && sectionIds.includes(String(item.id))
+    && typeof item.enabled === "boolean"
+    && (item.title === undefined || isString(item.title))
+    && (item.icon === undefined || iconIds.includes(String(item.icon)))));
+}
+
+function validExtraSections(value: unknown) {
+  return value === undefined || (Array.isArray(value) && value.every((item) => isRecord(item)
+    && isString(item.id) && isString(item.title) && typeof item.enabled === "boolean"
+    && extraKinds.includes(String(item.kind)) && iconIds.includes(String(item.icon))
+    && (item.preset === undefined || extraPresets.includes(String(item.preset)))
+    && Array.isArray(item.entries) && item.entries.every((entry) => hasStrings(entry, ["title", "subtitle", "period", "description"]))
+    && (item.text === undefined || isString(item.text))));
+}
+
+function validContactOptions(contact: Record<string, unknown>) {
+  const visibility = contact.visibility;
+  const custom = contact.custom;
+  return (visibility === undefined || (isRecord(visibility) && Object.values(visibility).every((item) => typeof item === "boolean")))
+    && (custom === undefined || (Array.isArray(custom) && custom.every((item) => isRecord(item)
+      && isString(item.id) && isString(item.label) && isString(item.value) && typeof item.enabled === "boolean"
+      && (item.url === undefined || isString(item.url))
+      && (item.icon === undefined || iconIds.includes(String(item.icon))))));
 }
 
 function normalizeSettings(value: Record<string, unknown>): BuilderSettings {
