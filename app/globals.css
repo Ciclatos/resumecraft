@@ -742,6 +742,18 @@ a {
   --spacing-factor: calc(var(--density-gap, 1) * var(--spacing-slider, 1));
 }
 
+.resume-template-modern-sidebar.resume-sidebar-narrow {
+  grid-template-columns: 58mm 1fr;
+}
+
+.resume-template-modern-sidebar.resume-sidebar-wide {
+  grid-template-columns: 68mm 1fr;
+}
+
+.resume-template-modern-sidebar.resume-sidebar-very-wide {
+  grid-template-columns: 72mm 1fr;
+}
+
 .sidebar {
   background: linear-gradient(180deg, var(--sidebar) 0%, #0a2339 58%, #081927 100%);
   color: var(--white);

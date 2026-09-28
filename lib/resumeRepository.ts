@@ -370,6 +370,7 @@ function normalizeSettings(value: Record<string, unknown>): BuilderSettings {
     spacingScale: boundedNumber(value.spacingScale, 80, 140, defaults.spacingScale),
     showPhoto: typeof value.showPhoto === "boolean" ? value.showPhoto : defaults.showPhoto,
     showQr: typeof value.showQr === "boolean" ? value.showQr : defaults.showQr,
+    sidebarWidth: ["narrow", "normal", "wide", "very-wide"].includes(String(value.sidebarWidth)) ? value.sidebarWidth as BuilderSettings["sidebarWidth"] : defaults.sidebarWidth,
   };
 }
 

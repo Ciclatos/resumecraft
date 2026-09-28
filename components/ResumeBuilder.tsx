@@ -30,6 +30,7 @@ import {
   type ResumeLanguage,
   type ResumeProject,
   type ResumeTemplate,
+  type SidebarWidth,
   type TypeScale,
   type ExtraResumeSection,
   type ExtraSectionKind,
@@ -108,6 +109,13 @@ const fontSizeOptions: Array<{ id: FontSize; labelKey: TranslationKey }> = [
   { id: "small", labelKey: "option.small" },
   { id: "normal", labelKey: "option.normal" },
   { id: "large", labelKey: "option.large" },
+];
+
+const sidebarWidthOptions: Array<{ id: SidebarWidth; labelKey: TranslationKey }> = [
+  { id: "narrow", labelKey: "option.narrow" },
+  { id: "normal", labelKey: "option.normal" },
+  { id: "wide", labelKey: "option.wide" },
+  { id: "very-wide", labelKey: "option.extraWide" },
 ];
 
 const visualPresets = [
@@ -553,6 +561,16 @@ export function ResumeBuilder() {
             onChange={(template) => updateSettings({ template })}
           />
 
+          {settings.template === "modern-sidebar" ? (
+            <SegmentedControl
+              label={language === "en" ? "Sidebar width" : "Ancho del panel lateral"}
+              value={settings.sidebarWidth}
+              options={sidebarWidthOptions}
+              language={language}
+              onChange={(sidebarWidth) => updateSettings({ sidebarWidth })}
+            />
+          ) : null}
+
           <section className="editor-section editor-section-tight">
             <h2>{t(language, "settings.presets")}</h2>
             <div className="segmented-control segmented-control-four">
@@ -825,6 +843,7 @@ export function ResumeBuilder() {
             showDemoLinks={false}
             showPhoto={settings.showPhoto}
             showQr={settings.showQr && Boolean(resume.contact.portfolio)}
+            sidebarWidth={settings.sidebarWidth}
             actions={
               <>
                 <button className="toolbar-button" type="button" onClick={loadExample}>

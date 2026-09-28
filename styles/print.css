@@ -338,12 +338,6 @@
     line-height: 1.16 !important;
   }
 
-  .print-dense .main .section:last-child .entry p,
-  .print-compact .main .section:last-child .entry p,
-  .print-balanced .main .section:last-child .entry p {
-    display: none !important;
-  }
-
   .print-dense .focus-list span {
     font-size: 6.4pt !important;
   }
@@ -633,5 +627,17 @@
 
   .main {
     max-height: 297mm !important;
+  }
+
+  .resume-template-modern-sidebar.resume-sidebar-narrow {
+    grid-template-columns: 58mm 152mm !important;
+  }
+
+  .resume-template-modern-sidebar.resume-sidebar-wide {
+    grid-template-columns: 68mm 142mm !important;
+  }
+
+  .resume-template-modern-sidebar.resume-sidebar-very-wide {
+    grid-template-columns: 72mm 138mm !important;
   }
 }

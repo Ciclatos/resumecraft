@@ -110,6 +110,7 @@ export type TypeScale = "compact" | "normal" | "wide";
 export type ResumeDensity = "compact" | "normal" | "airy";
 
 export type FontSize = "small" | "normal" | "large";
+export type SidebarWidth = "narrow" | "normal" | "wide" | "very-wide";
 
 export type BuilderSettings = {
   language: AppLanguage;
@@ -122,6 +123,7 @@ export type BuilderSettings = {
   spacingScale: number;
   showPhoto: boolean;
   showQr: boolean;
+  sidebarWidth: SidebarWidth;
 };
 
 export type ResumeData = {
@@ -252,4 +254,5 @@ export const defaultBuilderSettings: BuilderSettings = {
   spacingScale: 100,
   showPhoto: true,
   showQr: true,
+  sidebarWidth: "normal",
 };
