@@ -31,7 +31,32 @@ export type ResumeContact = {
   portfolio: string;
   linkedIn: string;
   github: string;
+  items?: ResumeContactItem[];
 };
+
+export type ResumeIconName = "user" | "briefcase" | "graduation" | "folder" | "sparkles" | "wrench" | "languages" | "award" | "book" | "users" | "heart" | "info" | "stethoscope" | "certificate";
+
+export type ResumeContactItem = {
+  id: string;
+  label: string;
+  value: string;
+  url?: string;
+  icon: ResumeIconName;
+  enabled: boolean;
+};
+
+export type ResumeSectionKind = "summary" | "experience" | "education" | "projects" | "skills" | "tools" | "languages" | "timeline" | "list" | "credentials" | "references" | "text";
+
+export type ResumeSectionConfig = {
+  id: string;
+  kind: ResumeSectionKind;
+  title: string;
+  icon: ResumeIconName;
+  enabled: boolean;
+};
+
+export type ResumeCustomEntry = { title: string; subtitle: string; period: string; description: string };
+export type ResumeExtraSection = ResumeSectionConfig & { items: ResumeCustomEntry[]; text?: string };
 
 export type ResumeTemplate =
   | "modern-sidebar"
@@ -66,6 +91,8 @@ export type ResumeData = {
   contact: ResumeContact;
   summary: string;
   focus: string[];
+  sectionConfig?: ResumeSectionConfig[];
+  extraSections?: ResumeExtraSection[];
   sections: {
     experience: ResumeEntry[];
     projects: ResumeProject[];
@@ -76,6 +103,25 @@ export type ResumeData = {
     additional?: string;
   };
 };
+
+export const defaultSectionConfig: ResumeSectionConfig[] = [
+  { id: "summary", kind: "summary", title: "Professional Summary", icon: "user", enabled: true },
+  { id: "experience", kind: "experience", title: "Experience", icon: "briefcase", enabled: true },
+  { id: "projects", kind: "projects", title: "Projects", icon: "folder", enabled: true },
+  { id: "education", kind: "education", title: "Education", icon: "graduation", enabled: true },
+  { id: "skills", kind: "skills", title: "Skills", icon: "sparkles", enabled: true },
+  { id: "tools", kind: "tools", title: "Tools", icon: "wrench", enabled: true },
+  { id: "languages", kind: "languages", title: "Languages", icon: "languages", enabled: true },
+];
+
+export function withResumeDefaults(data: ResumeData): ResumeData {
+  return {
+    ...data,
+    contact: { ...data.contact, items: data.contact.items ?? [] },
+    sectionConfig: data.sectionConfig?.length ? data.sectionConfig : defaultSectionConfig.map((item) => ({ ...item })),
+    extraSections: data.extraSections ?? [],
+  };
+}
 
 export const exampleResumeData: ResumeData = {
   name: "Sofía Herrera",
@@ -99,6 +145,8 @@ export const exampleResumeData: ResumeData = {
     "Data analysis",
     "Documentation",
   ],
+  sectionConfig: defaultSectionConfig.map((item) => ({ ...item })),
+  extraSections: [],
   sections: {
     experience: [
       {

@@ -5,6 +5,7 @@ import {
   resumeLibraryRecoveryKey,
   resumeLibraryStorageKey,
   ResumeRepository,
+  exportResume,
   resumeLibraryVersion,
   type StorageLike,
 } from "./resumeRepository";
@@ -72,7 +73,8 @@ describe("ResumeRepository", () => {
   it("migrates the real legacy format without deleting it and only migrates once", () => {
     storage.setItem(legacyBuilderStorageKey, JSON.stringify(content));
     const first = repository.getLibrary();
-    expect(first.resumes[0].data).toEqual(content);
+    expect(first.resumes[0].data.resume.name).toBe(content.resume.name);
+    expect(first.resumes[0].data.resume.sectionConfig?.map((section) => section.id)).toEqual(["summary", "experience", "projects", "education", "skills", "tools", "languages"]);
     expect(first.resumes[0].name).toBe("Mi CV");
     expect(storage.getItem(legacyBuilderStorageKey)).not.toBeNull();
 
@@ -125,6 +127,20 @@ describe("ResumeRepository", () => {
     expect(imported.name).toBe("Imported");
     expect(imported.id).not.toBe(repository.getAllResumes()[0].id);
     expect(() => repository.importResume({ nope: true })).toThrow("Invalid ResumeCraft resume file");
+  });
+
+  it("exports schema v2 and preserves modular medical-resume configuration", () => {
+    repository.getLibrary();
+    const medical = structuredClone(content);
+    medical.resume.sectionConfig = medical.resume.sectionConfig?.map((section) => ({ ...section, enabled: !["projects", "tools"].includes(section.id) }));
+    medical.resume.extraSections = [{ id: "certifications", kind: "credentials", title: "Certifications", icon: "certificate", enabled: true, items: [{ title: "Board Certification", subtitle: "Medical Board", period: "2026", description: "Anesthesiology" }] }];
+    medical.resume.sectionConfig?.push(medical.resume.extraSections[0]);
+    const saved = repository.createResume("Medical", medical);
+    const exported = JSON.parse(exportResume(saved));
+    expect(exported.version).toBe(2);
+    const imported = repository.importResume(exported);
+    expect(imported.data.resume.sectionConfig?.find((section) => section.id === "projects")?.enabled).toBe(false);
+    expect(imported.data.resume.extraSections?.[0].title).toBe("Certifications");
   });
 
   it("surfaces browser quota/storage failures", () => {

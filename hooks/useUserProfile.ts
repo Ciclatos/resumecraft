@@ -133,9 +133,7 @@ function parseProfile(value: unknown): UserProfile | null {
 }
 
 function hasProfileValues(profile: UserProfile) {
-  return [profile.name, profile.photo, profile.headline, ...Object.values(profile.contact)].some(
-    (value) => value.trim(),
-  );
+  return [profile.name, profile.photo, profile.headline, profile.contact.email, profile.contact.phone, profile.contact.location, profile.contact.portfolio, profile.contact.linkedIn, profile.contact.github].some((value) => value.trim());
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

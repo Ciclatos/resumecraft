@@ -1,17 +1,28 @@
 import {
   Github,
   Globe,
-  Languages,
   Linkedin,
   Mail,
   MapPin,
   Phone,
-  Sparkles,
   User,
+  BadgeCheck,
+  Award,
+  BookOpen,
+  BriefcaseBusiness,
+  FileBadge,
+  Folder,
+  GraduationCap,
+  HeartHandshake,
+  Info,
+  Languages,
+  Sparkles,
+  Stethoscope,
+  Users,
   Wrench,
 } from "lucide-react";
-import type { ResumeData } from "../data/resume";
-import { localizeFixedValue, t, type AppLanguage } from "../data/i18n";
+import type { ResumeData, ResumeIconName } from "../data/resume";
+import { t, type AppLanguage } from "../data/i18n";
 import { QRCode } from "./QRCode";
 
 type SidebarProps = {
@@ -20,6 +31,8 @@ type SidebarProps = {
   showPhoto?: boolean;
   showQr?: boolean;
 };
+
+const contactIconMap = { user: User, briefcase: BriefcaseBusiness, graduation: GraduationCap, folder: Folder, sparkles: Sparkles, wrench: Wrench, languages: Languages, award: Award, book: BookOpen, users: Users, heart: HeartHandshake, info: Info, stethoscope: Stethoscope, certificate: FileBadge } satisfies Record<ResumeIconName, typeof User>;
 
 export function Sidebar({ data, language = "es", showPhoto = true, showQr = false }: SidebarProps) {
   const photo = data.photo?.trim();
@@ -61,18 +74,18 @@ export function Sidebar({ data, language = "es", showPhoto = true, showQr = fals
 
       <SideSection title={t(language, "section.contact")} icon={User}>
         <ul className="contact-list">
-          <li>
+          {contact.email ? <li>
             <Mail size={14} aria-hidden="true" />
             <a href={`mailto:${contact.email}`}>{contact.email}</a>
-          </li>
-          <li>
+          </li> : null}
+          {contact.phone ? <li>
             <Phone size={14} aria-hidden="true" />
             <a href={`tel:${contact.phone.replace(/\s/g, "")}`}>{contact.phone}</a>
-          </li>
-          <li>
+          </li> : null}
+          {contact.location ? <li>
             <MapPin size={14} aria-hidden="true" />
             <span>{contact.location}</span>
-          </li>
+          </li> : null}
           {contact.portfolio ? (
             <li>
               <Globe size={14} aria-hidden="true" />
@@ -91,33 +104,13 @@ export function Sidebar({ data, language = "es", showPhoto = true, showQr = fals
               <a href={contact.github}>{githubLabel}</a>
             </li>
           ) : null}
-        </ul>
-      </SideSection>
-
-      <SideSection title={t(language, "section.skills")} icon={Sparkles}>
-        <ul className="simple-list">
-          {data.sections.skills.map((skill) => (
-            <li key={skill}>{skill}</li>
-          ))}
-        </ul>
-      </SideSection>
-
-      <SideSection title={t(language, "section.tools")} icon={Wrench}>
-        <ul className="simple-list tool-list">
-          {data.sections.tools.map((tool) => (
-            <li key={tool}>{tool}</li>
-          ))}
-        </ul>
-      </SideSection>
-
-      <SideSection title={t(language, "section.languages")} icon={Languages}>
-        <ul className="language-list">
-          {data.sections.languages.map((item) => (
-            <li key={item.name}>
-              <strong>{item.name}</strong>
-              {localizeFixedValue(language, item.level)}
-            </li>
-          ))}
+          {contact.items?.filter((item) => item.enabled && item.value.trim()).map((item) => {
+            const ContactIcon = contactIconMap[item.icon] ?? BadgeCheck;
+            return <li key={item.id}>
+              <ContactIcon size={14} aria-hidden="true" />
+              {item.url ? <a href={item.url}>{item.value}</a> : <span>{item.value}</span>}
+            </li>;
+          })}
         </ul>
       </SideSection>
 

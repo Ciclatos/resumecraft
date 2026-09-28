@@ -2,6 +2,7 @@ import {
   defaultBuilderSettings,
   type BuilderSettings,
   type ResumeData,
+  withResumeDefaults,
 } from "../data/resume";
 
 export const resumeLibraryStorageKey = "resumecraft.resumes.v3";
@@ -38,15 +39,7 @@ export class ResumeStorageError extends Error {
 }
 
 export function createEmptyResumeData(): ResumeData {
-  return {
-    name: "",
-    photo: "",
-    headline: "",
-    contact: { email: "", phone: "", location: "", portfolio: "", linkedIn: "", github: "" },
-    summary: "",
-    focus: [],
-    sections: { experience: [], projects: [], education: [], skills: [], tools: [], languages: [] },
-  };
+  return withResumeDefaults({ name: "", photo: "", headline: "", contact: { email: "", phone: "", location: "", portfolio: "", linkedIn: "", github: "" }, summary: "", focus: [], sections: { experience: [], projects: [], education: [], skills: [], tools: [], languages: [] } });
 }
 
 export class ResumeRepository {
@@ -231,7 +224,7 @@ export class ResumeRepository {
 }
 
 export function exportResume(resume: SavedResume) {
-  return JSON.stringify({ format: "resumecraft-resume", version: 1, name: resume.name, data: resume.data }, null, 2);
+  return JSON.stringify({ format: "resumecraft-resume", version: 2, name: resume.name, data: resume.data }, null, 2);
 }
 
 function normalizeLibrary(value: unknown): ResumeLibrary | null {
@@ -269,7 +262,7 @@ function importName(value: unknown) {
 function parseContent(value: unknown): ResumeContent | null {
   if (!isRecord(value) || !isResumeData(value.resume)) return null;
   const settings = isRecord(value.settings) ? value.settings : {};
-  return { resume: clone(value.resume), settings: normalizeSettings(settings) };
+  return { resume: withResumeDefaults(clone(value.resume)), settings: normalizeSettings(settings) };
 }
 
 function isResumeData(value: unknown): value is ResumeData {
@@ -284,7 +277,14 @@ function isResumeData(value: unknown): value is ResumeData {
     && Array.isArray(sections.education) && sections.education.every((item) => hasStrings(item, ["degree", "institution", "period", "detail"]))
     && Array.isArray(sections.skills) && sections.skills.every(isString)
     && Array.isArray(sections.tools) && sections.tools.every(isString)
-    && Array.isArray(sections.languages) && sections.languages.every((item) => hasStrings(item, ["name", "level"]));
+    && Array.isArray(sections.languages) && sections.languages.every((item) => hasStrings(item, ["name", "level"]))
+    && (value.sectionConfig === undefined || (Array.isArray(value.sectionConfig) && value.sectionConfig.every(isSectionConfig)))
+    && (value.extraSections === undefined || (Array.isArray(value.extraSections) && value.extraSections.every((item) => isSectionConfig(item) && isRecord(item) && Array.isArray(item.items) && item.items.every((entry: unknown) => hasStrings(entry, ["title", "subtitle", "period", "description"])))))
+    && (contact.items === undefined || (Array.isArray(contact.items) && contact.items.every((item) => isRecord(item) && isString(item.id) && isString(item.label) && isString(item.value) && isString(item.icon) && typeof item.enabled === "boolean" && (item.url === undefined || isString(item.url)))));
+}
+
+function isSectionConfig(value: unknown) {
+  return isRecord(value) && ["id", "kind", "title", "icon"].every((key) => isString(value[key])) && typeof value.enabled === "boolean";
 }
 
 function normalizeSettings(value: Record<string, unknown>): BuilderSettings {
